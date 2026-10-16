@@ -1,0 +1,36 @@
+{
+  "name": "open-crosshair",
+  "version": "1.0.0",
+  "description": "Open source, 100% offline Crosshair overlay and studio with brutalist UI",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev:renderer": "vite",
+    "dev:electron": "electron .",
+    "dev": "concurrently -k \"vite\" \"electron .\"",
+    "build": "vite build",
+    "start": "electron ."
+  },
+  "keywords": [
+    "crosshair",
+    "overlay",
+    "gaming",
+    "esports",
+    "open-source"
+  ],
+  "author": "OpenCrosshair",
+  "license": "MIT",
+  "dependencies": {
+    "lucide-react": "^1.58.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "electron": "^44.8.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.4"
+  }
+}
