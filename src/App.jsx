@@ -1,25 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { CrosshairPreview } from './components/CrosshairPreview';
 import { LayerEditor } from './components/LayerEditor';
 import { Presets } from './components/Presets';
 import { GameProfiles } from './components/GameProfiles';
-import { StreamerHub } from './components/StreamerHub';
+import { OverlayHub } from './components/OverlayHub';
 import { SettingsModal } from './components/SettingsModal';
+import { Toast } from './components/Toast';
 import { DEFAULT_PRESETS } from './constants/defaultPresets';
 import { generateCrosshairSVG } from './utils/svgGenerator';
-import {
-  Crosshair,
-  Bookmark,
-  Gamepad2,
-  Video,
-  Settings as SettingsIcon,
-  RotateCcw,
-  Sparkles,
-} from 'lucide-react';
 
 export function App() {
-  const [activeNav, setActiveNav] = useState('studio'); // 'studio' | 'presets' | 'profiles' | 'streamer'
+  const [activeNav, setActiveNav] = useState('studio'); // 'studio' | 'presets' | 'games' | 'overlay'
   const [crosshairConfig, setCrosshairConfig] = useState(DEFAULT_PRESETS[0]);
   const [savedCrosshairs, setSavedCrosshairs] = useState([]);
   const [gameProfiles, setGameProfiles] = useState([]);
@@ -28,6 +21,53 @@ export function App() {
   const [selectedDisplayId, setSelectedDisplayId] = useState(null);
   const [activeFocusedProfile, setActiveFocusedProfile] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  // Theme & Accent States
+  const [theme, setTheme] = useState(() => localStorage.getItem('och_theme') || 'dark');
+  const [accent, setAccent] = useState(() => localStorage.getItem('och_accent') || 'emerald');
+
+  // Undo / Redo History Stack
+  const historyRef = useRef([DEFAULT_PRESETS[0]]);
+  const historyIndexRef = useRef(0);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  // Show Toast Helper
+  const showToast = useCallback((toastData) => {
+    setToast(toastData);
+    if (toastData.duration !== 0) {
+      setTimeout(() => {
+        setToast((current) => (current === toastData ? null : current));
+      }, toastData.duration || 3000);
+    }
+  }, []);
+
+  // Update Theme & Accent on root DOM
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-accent', accent);
+    localStorage.setItem('och_accent', accent);
+
+    if (theme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('och_theme', theme);
+  }, [theme, accent]);
+
+  // System theme change listener
+  useEffect(() => {
+    if (theme !== 'system') return;
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [theme]);
 
   // Initialize data from Electron store
   useEffect(() => {
@@ -36,6 +76,8 @@ export function App() {
         if (storeData) {
           if (storeData.activeCrosshair) {
             setCrosshairConfig(storeData.activeCrosshair);
+            historyRef.current = [storeData.activeCrosshair];
+            historyIndexRef.current = 0;
           }
           if (storeData.savedCrosshairs) {
             setSavedCrosshairs(storeData.savedCrosshairs);
@@ -46,6 +88,8 @@ export function App() {
           if (storeData.settings) {
             setOverlayEnabled(storeData.settings.overlayEnabled !== false);
             setSelectedDisplayId(storeData.settings.selectedDisplayId);
+            if (storeData.settings.theme) setTheme(storeData.settings.theme);
+            if (storeData.settings.accent) setAccent(storeData.settings.accent);
           }
         }
       });
@@ -58,19 +102,44 @@ export function App() {
       // Listen for game profile switch
       window.api.onGameSwitched(({ profile, crosshair }) => {
         setActiveFocusedProfile(profile);
-        setCrosshairConfig(crosshair);
+        if (crosshair) {
+          setCrosshairConfig(crosshair);
+          showToast({ message: `Auto-switched profile for ${profile.gameName || profile.processName}`, type: 'success' });
+        }
       });
 
       // Listen for overlay toggle
       window.api.onOverlayStateChanged((newState) => {
         setOverlayEnabled(newState);
       });
+
+      // Listen for crosshair recenter
+      window.api.onCrosshairRecentered((newCrosshair) => {
+        setCrosshairConfig(newCrosshair);
+        showToast({ message: 'Crosshair centered to pixel (0, 0)', type: 'info' });
+      });
     }
+  }, [showToast]);
+
+  // Push to history helper
+  const pushToHistory = useCallback((newConfig) => {
+    const history = historyRef.current.slice(0, historyIndexRef.current + 1);
+    history.push(newConfig);
+    // Keep max 50 history steps
+    if (history.length > 50) history.shift();
+    historyRef.current = history;
+    historyIndexRef.current = history.length - 1;
+    setCanUndo(historyIndexRef.current > 0);
+    setCanRedo(false);
   }, []);
 
   // Sync active crosshair to overlay and streamer server whenever it changes
-  const handleConfigChange = (newConfig) => {
+  const handleConfigChange = (newConfig, recordHistory = true) => {
     setCrosshairConfig(newConfig);
+
+    if (recordHistory) {
+      pushToHistory(newConfig);
+    }
 
     if (window.api) {
       const svg = generateCrosshairSVG(newConfig, { viewBoxSize: 128 });
@@ -81,13 +150,69 @@ export function App() {
     }
   };
 
+  // Undo / Redo
+  const handleUndo = useCallback(() => {
+    if (historyIndexRef.current > 0) {
+      historyIndexRef.current -= 1;
+      const prevConfig = historyRef.current[historyIndexRef.current];
+      setCrosshairConfig(prevConfig);
+      setCanUndo(historyIndexRef.current > 0);
+      setCanRedo(true);
+
+      if (window.api) {
+        const svg = generateCrosshairSVG(prevConfig, { viewBoxSize: 128 });
+        window.api.updateCrosshair({ ...prevConfig, svg });
+      }
+    }
+  }, []);
+
+  const handleRedo = useCallback(() => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      historyIndexRef.current += 1;
+      const nextConfig = historyRef.current[historyIndexRef.current];
+      setCrosshairConfig(nextConfig);
+      setCanUndo(true);
+      setCanRedo(historyIndexRef.current < historyRef.current.length - 1);
+
+      if (window.api) {
+        const svg = generateCrosshairSVG(nextConfig, { viewBoxSize: 128 });
+        window.api.updateCrosshair({ ...nextConfig, svg });
+      }
+    }
+  }, []);
+
+  // Keyboard shortcut handler (Undo, Redo, Recoil, Overlay toggle)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Undo: Ctrl+Z or Cmd+Z
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+      // Redo: Ctrl+Y or Ctrl+Shift+Z
+      else if (
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+      ) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo, handleRedo]);
+
   const handleToggleOverlay = () => {
     if (window.api) {
       window.api.toggleOverlay().then((newState) => {
         setOverlayEnabled(newState);
+        showToast({ message: `Screen overlay ${newState ? 'activated' : 'muted'}`, type: newState ? 'success' : 'info' });
       });
     } else {
-      setOverlayEnabled(!overlayEnabled);
+      const next = !overlayEnabled;
+      setOverlayEnabled(next);
+      showToast({ message: `Screen overlay ${next ? 'activated' : 'muted'}`, type: next ? 'success' : 'info' });
     }
   };
 
@@ -95,6 +220,7 @@ export function App() {
     setSelectedDisplayId(displayId);
     if (window.api) {
       window.api.selectDisplay(displayId);
+      showToast({ message: `Overlay mapped to Display ${displayId}`, type: 'success' });
     }
   };
 
@@ -128,106 +254,68 @@ export function App() {
   const handleResetDefaults = () => {
     handleConfigChange(DEFAULT_PRESETS[0]);
     setSettingsOpen(false);
+    showToast({ message: 'Settings reset to factory defaults', type: 'info' });
+  };
+
+  const handleRecenter = () => {
+    const updated = {
+      ...crosshairConfig,
+      offsetX: 0,
+      offsetY: 0,
+    };
+    handleConfigChange(updated);
+    showToast({ message: 'Crosshair centered to pixel (0, 0)', type: 'success' });
+  };
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0A0B0E] text-[#F3F4F6] font-sans">
-      {/* Top Header */}
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-main)] font-sans antialiased">
+      {/* Top Header Titlebar */}
       <Header
         overlayEnabled={overlayEnabled}
         onToggleOverlay={handleToggleOverlay}
         displays={displays}
         selectedDisplayId={selectedDisplayId}
         onSelectDisplay={handleSelectDisplay}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        hasUnsavedChanges={false}
+        activeProfileName={activeFocusedProfile?.gameName}
       />
 
       {/* Main Workspace Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Vertical Navigation Rail */}
-        <aside className="w-16 bg-[#0E1017] border-r-2 border-[#262A3B] flex flex-col items-center justify-between py-3 select-none z-20">
-          <div className="flex flex-col gap-2 w-full px-2">
-            <button
-              onClick={() => setActiveNav('studio')}
-              className={`w-full h-11 flex flex-col items-center justify-center border transition-all ${
-                activeNav === 'studio'
-                  ? 'bg-[#CCFF00] text-black border-black shadow-[2px_2px_0px_#000]'
-                  : 'bg-[#181B26] text-[#8E95A5] border-[#262A3B] hover:text-white hover:border-[#8E95A5]'
-              }`}
-              title="Crosshair Studio"
-            >
-              <Crosshair size={18} className="stroke-[2.5]" />
-              <span className="text-[9px] font-mono font-bold mt-0.5">STUDIO</span>
-            </button>
-
-            <button
-              onClick={() => setActiveNav('presets')}
-              className={`w-full h-11 flex flex-col items-center justify-center border transition-all ${
-                activeNav === 'presets'
-                  ? 'bg-[#CCFF00] text-black border-black shadow-[2px_2px_0px_#000]'
-                  : 'bg-[#181B26] text-[#8E95A5] border-[#262A3B] hover:text-white hover:border-[#8E95A5]'
-              }`}
-              title="Preset Vault"
-            >
-              <Bookmark size={17} />
-              <span className="text-[9px] font-mono font-bold mt-0.5">VAULT</span>
-            </button>
-
-            <button
-              onClick={() => setActiveNav('profiles')}
-              className={`w-full h-11 flex flex-col items-center justify-center border transition-all ${
-                activeNav === 'profiles'
-                  ? 'bg-[#CCFF00] text-black border-black shadow-[2px_2px_0px_#000]'
-                  : 'bg-[#181B26] text-[#8E95A5] border-[#262A3B] hover:text-white hover:border-[#8E95A5]'
-              }`}
-              title="Game Profiles"
-            >
-              <Gamepad2 size={18} />
-              <span className="text-[9px] font-mono font-bold mt-0.5">GAMES</span>
-            </button>
-
-            <button
-              onClick={() => setActiveNav('streamer')}
-              className={`w-full h-11 flex flex-col items-center justify-center border transition-all ${
-                activeNav === 'streamer'
-                  ? 'bg-[#CCFF00] text-black border-black shadow-[2px_2px_0px_#000]'
-                  : 'bg-[#181B26] text-[#8E95A5] border-[#262A3B] hover:text-white hover:border-[#8E95A5]'
-              }`}
-              title="OBS Streamer Source"
-            >
-              <Video size={17} />
-              <span className="text-[9px] font-mono font-bold mt-0.5">OBS</span>
-            </button>
-          </div>
-
-          {/* Bottom Settings Button */}
-          <div className="w-full px-2">
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="w-full h-10 flex flex-col items-center justify-center border border-[#262A3B] bg-[#181B26] text-[#8E95A5] hover:text-[#CCFF00] hover:border-[#CCFF00] transition-colors"
-              title="Settings"
-            >
-              <SettingsIcon size={16} />
-              <span className="text-[9px] font-mono font-bold mt-0.5">CONFIG</span>
-            </button>
-          </div>
-        </aside>
+        {/* Modern Sidebar Rail */}
+        <Sidebar
+          activeNav={activeNav}
+          onSelectNav={setActiveNav}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
+          onOpenSettings={() => setSettingsOpen(true)}
+        />
 
         {/* Central Workspace Switcher */}
         <main className="flex-1 flex overflow-hidden">
           {activeNav === 'studio' && (
             <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
-              {/* Center Viewport Preview */}
+              {/* Center Viewport Preview Canvas */}
               <div className="flex-1 flex flex-col h-full overflow-hidden">
                 <CrosshairPreview
                   config={crosshairConfig}
                   onTriggerRecoil={(amount) => {
                     if (window.api) window.api.triggerRecoil(amount);
                   }}
+                  onRecenter={handleRecenter}
                 />
               </div>
 
-              {/* Right Layer Editor Panel */}
-              <div className="w-full md:w-80 lg:w-96 h-full overflow-hidden">
+              {/* Right Customization Inspector */}
+              <div className="w-full md:w-80 lg:w-96 h-full overflow-hidden shrink-0">
                 <LayerEditor
                   config={crosshairConfig}
                   onChange={handleConfigChange}
@@ -240,28 +328,41 @@ export function App() {
             <div className="flex-1 h-full overflow-hidden">
               <Presets
                 currentConfig={crosshairConfig}
-                onSelectPreset={handleConfigChange}
+                onSelectPreset={(preset) => {
+                  handleConfigChange(preset);
+                  setActiveNav('studio');
+                  showToast({ message: `Applied preset "${preset.name}"`, type: 'success' });
+                }}
                 savedCrosshairs={savedCrosshairs}
                 onSaveCurrent={handleSaveCurrent}
                 onDeleteSaved={handleDeleteSaved}
+                onShowToast={showToast}
               />
             </div>
           )}
 
-          {activeNav === 'profiles' && (
+          {activeNav === 'games' && (
             <div className="flex-1 h-full overflow-hidden">
               <GameProfiles
                 profiles={gameProfiles}
                 onSaveProfiles={handleSaveGameProfiles}
                 savedCrosshairs={savedCrosshairs}
                 activeProfile={activeFocusedProfile}
+                onShowToast={showToast}
               />
             </div>
           )}
 
-          {activeNav === 'streamer' && (
+          {activeNav === 'overlay' && (
             <div className="flex-1 h-full overflow-hidden">
-              <StreamerHub />
+              <OverlayHub
+                overlayEnabled={overlayEnabled}
+                onToggleOverlay={handleToggleOverlay}
+                displays={displays}
+                selectedDisplayId={selectedDisplayId}
+                onSelectDisplay={handleSelectDisplay}
+                onShowToast={showToast}
+              />
             </div>
           )}
         </main>
@@ -273,7 +374,32 @@ export function App() {
         onClose={() => setSettingsOpen(false)}
         currentConfig={crosshairConfig}
         onResetDefaults={handleResetDefaults}
+        theme={theme}
+        onChangeTheme={setTheme}
+        accent={accent}
+        onChangeAccent={setAccent}
+        allData={{
+          activeCrosshair: crosshairConfig,
+          savedCrosshairs,
+          gameProfiles,
+          theme,
+          accent,
+        }}
+        onImportBackup={(backup) => {
+          if (backup.activeCrosshair) handleConfigChange(backup.activeCrosshair);
+          if (backup.savedCrosshairs) setSavedCrosshairs(backup.savedCrosshairs);
+          if (backup.gameProfiles) setGameProfiles(backup.gameProfiles);
+          if (backup.theme) setTheme(backup.theme);
+          if (backup.accent) setAccent(backup.accent);
+          if (window.api) {
+            window.api.saveStore?.(backup);
+          }
+        }}
+        onShowToast={showToast}
       />
+
+      {/* Non-intrusive Toast Notifications */}
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

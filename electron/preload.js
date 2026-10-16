@@ -22,11 +22,16 @@ contextBridge.exposeInMainWorld('api', {
   maximize: () => ipcRenderer.send('window-maximize'),
   close: () => ipcRenderer.send('window-close'),
 
+  saveStore: (data) => ipcRenderer.invoke('save-store', data),
+
   // Event Listeners
   onGameSwitched: (callback) => {
     ipcRenderer.on('game-profile-switched', (_event, profile) => callback(profile));
   },
   onOverlayStateChanged: (callback) => {
     ipcRenderer.on('overlay-state-changed', (_event, state) => callback(state));
+  },
+  onCrosshairRecentered: (callback) => {
+    ipcRenderer.on('crosshair-recentered', (_event, crosshair) => callback(crosshair));
   },
 });

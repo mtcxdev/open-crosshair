@@ -1,57 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import { Minus, Square, X, Eye, EyeOff, Monitor, Radio, ShieldCheck } from 'lucide-react';
+import React from 'react';
+import {
+  Minus,
+  Square,
+  X,
+  Eye,
+  EyeOff,
+  Monitor,
+  Undo2,
+  Redo2,
+  Crosshair,
+  ShieldCheck,
+  CircleDot
+} from 'lucide-react';
 
-export function Header({ overlayEnabled, onToggleOverlay, displays, selectedDisplayId, onSelectDisplay }) {
-  const isElectron = !!window.api;
+export function Header({
+  overlayEnabled,
+  onToggleOverlay,
+  displays,
+  selectedDisplayId,
+  onSelectDisplay,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  hasUnsavedChanges,
+  onSaveCurrent,
+  activeProfileName,
+}) {
+  const isElectron = typeof window !== 'undefined' && !!window.api;
 
   return (
-    <header className="h-12 border-b-2 border-[#262A3B] bg-[#0A0B0E] flex items-center justify-between px-3 select-none" style={{ WebkitAppRegion: 'drag' }}>
-      {/* Left: Branding & Status */}
+    <header
+      className="h-12 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex items-center justify-between px-3.5 select-none shrink-0 z-30"
+      style={{ WebkitAppRegion: 'drag' }}
+    >
+      {/* Left: Brand & Status */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#CCFF00] border border-black shadow-[2px_2px_0px_#000]"></div>
-          <span className="font-mono font-extrabold text-sm tracking-wider text-[#F3F4F6]">
-            OPEN<span className="text-[#CCFF00]">CROSSHAIR</span>
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#181B26] border border-[#262A3B] text-[#8E95A5]">
-            v1.0.0
-          </span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 rounded-md bg-[var(--accent-subtle)] border border-[var(--accent-border)] flex items-center justify-center text-[var(--accent)]">
+            <Crosshair size={14} className="stroke-[2.5]" />
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-semibold text-sm tracking-tight text-[var(--text-main)]">
+              OpenCrosshair
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
+              v1.0.1
+            </span>
+          </div>
         </div>
 
-        <div className="h-4 w-[1px] bg-[#262A3B] mx-1"></div>
+        <div className="h-4 w-[1px] bg-[var(--border-subtle)] mx-1" />
 
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#CCFF00]">
-          <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse"></span>
-          <span>100% OFFLINE</span>
+        {/* Status Indicators */}
+        <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+          <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-secondary)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" />
+            <span>Local Offline</span>
+          </div>
+
+          {activeProfileName && (
+            <div className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--accent)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+              <span>{activeProfileName}</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Center: Controls (Overlay Toggle & Monitor Select) */}
-      <div className="flex items-center gap-3" style={{ WebkitAppRegion: 'no-drag' }}>
-        {/* Overlay Toggle Switch */}
+      {/* Center: Overlay Switch & Monitor Selector */}
+      <div className="flex items-center gap-2.5" style={{ WebkitAppRegion: 'no-drag' }}>
+        {/* Undo / Redo Buttons */}
+        <div className="flex items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-base)] p-0.5">
+          <button
+            onClick={onUndo}
+            disabled={!canUndo}
+            className={`p-1.5 rounded-md transition-all ${
+              canUndo
+                ? 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+                : 'text-[var(--text-disabled)] opacity-40 cursor-not-allowed'
+            }`}
+            title="Undo change (Ctrl+Z)"
+          >
+            <Undo2 size={13} />
+          </button>
+          <button
+            onClick={onRedo}
+            disabled={!canRedo}
+            className={`p-1.5 rounded-md transition-all ${
+              canRedo
+                ? 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+                : 'text-[var(--text-disabled)] opacity-40 cursor-not-allowed'
+            }`}
+            title="Redo change (Ctrl+Y)"
+          >
+            <Redo2 size={13} />
+          </button>
+        </div>
+
+        {/* Overlay Toggle Switch Pill */}
         <button
           onClick={onToggleOverlay}
-          className={`brutal-btn py-1 px-3 text-xs flex items-center gap-1.5 ${
-            overlayEnabled ? 'bg-[#CCFF00] text-black' : 'bg-[#181B26] text-[#8E95A5] border-[#262A3B]'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all ${
+            overlayEnabled
+              ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--text-main)] shadow-[0_0_12px_var(--accent-glow)]'
+              : 'bg-[var(--bg-surface-elevated)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-medium)]'
           }`}
           title="Toggle Screen Overlay (Ctrl+Shift+X)"
         >
-          {overlayEnabled ? <Eye size={13} className="stroke-[2.5]" /> : <EyeOff size={13} />}
-          <span>OVERLAY: {overlayEnabled ? 'ACTIVE' : 'MUTED'}</span>
+          <span
+            className={`w-2 h-2 rounded-full transition-colors ${
+              overlayEnabled ? 'bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]' : 'bg-neutral-500'
+            }`}
+          />
+          <span className="tracking-tight">
+            Overlay: <span className="font-semibold">{overlayEnabled ? 'Active' : 'Muted'}</span>
+          </span>
+          {overlayEnabled ? (
+            <Eye size={13} className="text-[var(--accent)] stroke-[2.2]" />
+          ) : (
+            <EyeOff size={13} />
+          )}
         </button>
 
-        {/* Display Selector */}
+        {/* Multi-Monitor Dropdown */}
         {displays && displays.length > 1 && (
-          <div className="flex items-center gap-1.5 bg-[#12141C] border border-[#262A3B] px-2 py-1 text-xs font-mono">
-            <Monitor size={12} className="text-[#8E95A5]" />
+          <div className="flex items-center gap-1.5 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs">
+            <Monitor size={12} className="text-[var(--text-secondary)]" />
             <select
               value={selectedDisplayId || ''}
               onChange={(e) => onSelectDisplay(Number(e.target.value))}
-              className="bg-transparent text-[#F3F4F6] text-xs font-mono outline-none cursor-pointer"
+              className="bg-transparent text-[var(--text-main)] text-xs outline-none cursor-pointer pr-1"
             >
               {displays.map((d) => (
-                <option key={d.id} value={d.id} className="bg-[#12141C] text-[#F3F4F6]">
-                  {d.label} {d.isPrimary ? '[PRI]' : ''}
+                <option key={d.id} value={d.id} className="bg-[var(--bg-surface-elevated)] text-[var(--text-main)]">
+                  {d.label} {d.isPrimary ? '(Primary)' : ''}
                 </option>
               ))}
             </select>
@@ -63,24 +146,24 @@ export function Header({ overlayEnabled, onToggleOverlay, displays, selectedDisp
       <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' }}>
         <button
           onClick={() => isElectron && window.api.minimize()}
-          className="w-8 h-8 flex items-center justify-center border border-[#262A3B] bg-[#12141C] hover:bg-[#202433] text-[#8E95A5] hover:text-[#F3F4F6] transition-colors"
-          title="Minimize"
+          className="w-8 h-8 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)] transition-colors"
+          title="Minimize to System Tray"
         >
-          <Minus size={14} />
+          <Minus size={13} />
         </button>
         <button
           onClick={() => isElectron && window.api.maximize()}
-          className="w-8 h-8 flex items-center justify-center border border-[#262A3B] bg-[#12141C] hover:bg-[#202433] text-[#8E95A5] hover:text-[#F3F4F6] transition-colors"
+          className="w-8 h-8 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)] transition-colors"
           title="Maximize"
         >
-          <Square size={12} />
+          <Square size={11} />
         </button>
         <button
           onClick={() => isElectron && window.api.close()}
-          className="w-8 h-8 flex items-center justify-center border border-[#262A3B] bg-[#12141C] hover:bg-[#FF0055] hover:text-white text-[#8E95A5] transition-colors"
-          title="Close"
+          className="w-8 h-8 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-rose-500 transition-colors"
+          title="Minimize to System Tray / Close"
         >
-          <X size={14} />
+          <X size={13} />
         </button>
       </div>
     </header>

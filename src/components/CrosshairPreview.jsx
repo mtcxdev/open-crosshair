@@ -1,29 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { Target, Crosshair, Grid, ZoomIn, Play, Maximize2 } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  Grid3X3,
+  ZoomIn,
+  ZoomOut,
+  Play,
+  RotateCcw,
+  Target,
+  Maximize2,
+  Crosshair as CrosshairIcon,
+  Sparkles
+} from 'lucide-react';
 import { generateCrosshairSVG } from '../utils/svgGenerator';
 
-export function CrosshairPreview({ config, onTriggerRecoil }) {
-  const [bgMode, setBgMode] = useState('grid'); // 'grid' | 'tactical' | 'contrast' | 'dark'
+export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
+  const [bgMode, setBgMode] = useState('grid'); // 'grid' | 'dark' | 'light' | 'range' | 'contrast'
+  const [zoomLevel, setZoomLevel] = useState(1); // 1 | 2 | 4 | 8
   const [bloom, setBloom] = useState(0);
   const [isFiring, setIsFiring] = useState(false);
   const [isAds, setIsAds] = useState(false);
 
   // Dynamic recoil simulation
+  const triggerRecoilPulse = () => {
+    setIsFiring(true);
+    const recoilAmount = 8 * (config.recoilMultiplier || 1.0);
+    setBloom(recoilAmount);
+
+    if (onTriggerRecoil) {
+      onTriggerRecoil(recoilAmount);
+    }
+
+    setTimeout(() => {
+      setBloom(0);
+      setIsFiring(false);
+    }, 150);
+  };
+
   const handleMouseDown = (e) => {
     if (e.button === 0) {
-      // Left Click: Fire
-      setIsFiring(true);
-      const recoilAmount = 8 * (config.recoilMultiplier || 1.0);
-      setBloom(recoilAmount);
-
-      if (onTriggerRecoil) {
-        onTriggerRecoil(recoilAmount);
-      }
-
-      setTimeout(() => {
-        setBloom(0);
-        setIsFiring(false);
-      }, 150);
+      // Left Click: Fire weapon simulation
+      triggerRecoilPulse();
     } else if (e.button === 2) {
       // Right Click: Toggle ADS zoom
       e.preventDefault();
@@ -31,7 +46,7 @@ export function CrosshairPreview({ config, onTriggerRecoil }) {
     }
   };
 
-  const currentScale = isAds ? (config.scale || 1.0) * 1.5 : (config.scale || 1.0);
+  const currentScale = (isAds ? (config.scale || 1.0) * 1.5 : (config.scale || 1.0)) * zoomLevel;
   const effectiveConfig = {
     ...config,
     scale: currentScale,
@@ -43,52 +58,64 @@ export function CrosshairPreview({ config, onTriggerRecoil }) {
     viewBoxSize: 128,
   });
 
-  // Background styles
-  const getBgStyle = () => {
+  // Background presets
+  const getBgClass = () => {
     switch (bgMode) {
-      case 'tactical':
-        return {
-          background: 'linear-gradient(135deg, #2b302c 0%, #1e2220 50%, #171a18 100%)',
-          backgroundImage: 'radial-gradient(circle at center, rgba(140, 160, 140, 0.15) 0%, transparent 70%)',
-        };
-      case 'contrast':
-        return {
-          backgroundColor: '#008000', // Green screen contrast check
-        };
       case 'dark':
-        return {
-          backgroundColor: '#050608',
-        };
+        return 'bg-[#0A0B0E]';
+      case 'light':
+        return 'bg-[#E5E7EB] text-black';
+      case 'contrast':
+        return 'bg-[#007F3E]';
+      case 'range':
+        return 'bg-gradient-to-b from-[#1C1F26] via-[#14161B] to-[#0E1014]';
       case 'grid':
       default:
-        return {
-          backgroundColor: '#0E1017',
-          backgroundImage: `
-            linear-gradient(to right, #1B1E2B 1px, transparent 1px),
-            linear-gradient(to bottom, #1B1E2B 1px, transparent 1px),
-            radial-gradient(circle, #CCFF00 1px, transparent 1px)
-          `,
-          backgroundSize: '24px 24px, 24px 24px, 120px 120px',
-          backgroundPosition: 'center center',
-        };
+        return 'bg-[var(--bg-base)]';
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#0A0B0E] p-4 select-none">
-      {/* Viewport Card */}
+    <div className="flex-1 flex flex-col h-full bg-[var(--bg-base)] p-4 select-none overflow-hidden relative">
+      {/* Visual Centerpiece Canvas */}
       <div
-        className="relative flex-1 brutal-card border-2 border-[#262A3B] overflow-hidden flex items-center justify-center cursor-crosshair group"
-        style={getBgStyle()}
+        className={`relative flex-1 rounded-2xl border border-[var(--border-subtle)] overflow-hidden flex items-center justify-center cursor-crosshair group transition-colors duration-200 shadow-inner ${getBgClass()}`}
         onMouseDown={handleMouseDown}
         onContextMenu={(e) => e.preventDefault()}
       >
-        {/* Subtle Crosshair Guide Lines */}
+        {/* Subtle Canvas Background Pattern */}
+        {bgMode === 'grid' && (
+          <div
+            className="absolute inset-0 pointer-events-none opacity-25"
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px)
+              `,
+              backgroundSize: '32px 32px, 32px 32px, 32px 32px',
+              backgroundPosition: 'center center',
+            }}
+          />
+        )}
+
+        {/* Tactical Aim Range Silhouette Mode */}
+        {bgMode === 'range' && (
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+            {/* Target dummy head / torso wireframe */}
+            <div className="w-24 h-24 rounded-full border border-white/20 -mt-16 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border border-white/30" />
+            </div>
+            <div className="absolute w-48 h-56 rounded-t-3xl border border-white/10 mt-36" />
+          </div>
+        )}
+
+        {/* Center Guide Crosshair Lines (Subtle & Non-distracting) */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div className="w-full h-[1px] bg-white/5"></div>
-          <div className="absolute h-full w-[1px] bg-white/5"></div>
-          <div className="absolute w-40 h-40 rounded-full border border-white/5"></div>
-          <div className="absolute w-80 h-80 rounded-full border border-white/5 border-dashed"></div>
+          <div className="w-full h-[1px] bg-white/[0.04]" />
+          <div className="absolute h-full w-[1px] bg-white/[0.04]" />
+          <div className="absolute w-32 h-32 rounded-full border border-white/[0.04]" />
+          <div className="absolute w-64 h-64 rounded-full border border-white/[0.03] border-dashed" />
         </div>
 
         {/* The Live Rendered Vector Crosshair */}
@@ -97,99 +124,141 @@ export function CrosshairPreview({ config, onTriggerRecoil }) {
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
 
-        {/* Top-Left Telemetry Overlay */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none font-mono text-[11px]">
-          <div className="flex items-center gap-1.5">
-            <span className="brutal-badge">VIEWPORT</span>
-            <span className="text-[#8E95A5]">128x128 PX</span>
+        {/* Top Floating Overlay Pills */}
+        <div className="absolute top-3.5 left-3.5 flex items-center gap-2 pointer-events-none">
+          <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] shadow-sm">
+            <span className="font-medium text-[var(--text-main)]">
+              {config.name || 'Custom'}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[var(--text-tertiary)]" />
+            <span className="font-mono text-[11px] text-[var(--accent)] font-medium">
+              {zoomLevel}x Canvas
+            </span>
+            {isAds && (
+              <span className="px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 font-semibold text-[10px]">
+                ADS
+              </span>
+            )}
           </div>
-          <div className="text-[#8E95A5] text-[10px]">
-            SCALE: <span className="text-[#CCFF00] font-bold">{currentScale.toFixed(2)}X</span>
-            {isAds && <span className="text-[#00F0FF] ml-1">[ADS ON]</span>}
-          </div>
-          <div className="text-[#8E95A5] text-[10px]">
-            OFFSET: <span className="text-white">X:{config.offsetX || 0} Y:{config.offsetY || 0}</span>
-          </div>
+
+          {(config.offsetX !== 0 || config.offsetY !== 0) && (
+            <div className="px-2.5 py-1 rounded-full bg-[var(--bg-surface-elevated)]/80 backdrop-blur-md border border-[var(--border-subtle)] text-[11px] font-mono text-[var(--text-secondary)]">
+              X:{config.offsetX || 0} Y:{config.offsetY || 0}
+            </div>
+          )}
         </div>
 
-        {/* Top-Right Firing Simulator Hint */}
-        <div className="absolute top-3 right-3 flex items-center gap-2 bg-[#12141C]/80 backdrop-blur border border-[#262A3B] px-2.5 py-1 text-[11px] font-mono text-[#8E95A5]">
-          <span className="text-[#CCFF00] font-bold">L-CLICK:</span> TEST RECOIL
-          <span className="text-[#262A3B]">|</span>
-          <span className="text-[#00F0FF] font-bold">R-CLICK:</span> ADS ZOOM
-        </div>
-
-        {/* Bottom-Right Active Weapon Firing Pulse Indicator */}
+        {/* Firing Bloom Pulse Indicator */}
         {isFiring && (
-          <div className="absolute bottom-3 right-3 font-mono text-xs font-bold text-[#FF0055] bg-black/80 px-2 py-0.5 border border-[#FF0055] animate-ping">
-            FIRE PULSE
+          <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-medium flex items-center gap-1.5 animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+            <span>Recoil Active</span>
           </div>
         )}
+
+        {/* Interaction Hint (Fades out when engaged) */}
+        <div className="absolute bottom-3 left-3 text-[11px] text-[var(--text-tertiary)] pointer-events-none hidden md:block">
+          Click canvas to simulate recoil &bull; Right click for ADS
+        </div>
       </div>
 
-      {/* Viewport Control Bar */}
-      <div className="mt-3 flex items-center justify-between font-mono text-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-[#8E95A5] uppercase text-[10px] tracking-wider">Backdrop:</span>
+      {/* Floating Canvas Control Toolbar */}
+      <div className="mt-3 flex items-center justify-between text-xs shrink-0">
+        {/* Left: Background Backdrop Presets */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
           <button
             onClick={() => setBgMode('grid')}
-            className={`px-2.5 py-1 border text-[11px] font-mono transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
               bgMode === 'grid'
-                ? 'bg-[#CCFF00] text-black border-black font-bold shadow-[2px_2px_0px_#000]'
-                : 'bg-[#12141C] text-[#8E95A5] border-[#262A3B] hover:text-white'
+                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
             }`}
           >
-            AIM GRID
+            Grid
           </button>
           <button
-            onClick={() => setBgMode('tactical')}
-            className={`px-2.5 py-1 border text-[11px] font-mono transition-all ${
-              bgMode === 'tactical'
-                ? 'bg-[#CCFF00] text-black border-black font-bold shadow-[2px_2px_0px_#000]'
-                : 'bg-[#12141C] text-[#8E95A5] border-[#262A3B] hover:text-white'
+            onClick={() => setBgMode('range')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+              bgMode === 'range'
+                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
             }`}
           >
-            TACTICAL
-          </button>
-          <button
-            onClick={() => setBgMode('contrast')}
-            className={`px-2.5 py-1 border text-[11px] font-mono transition-all ${
-              bgMode === 'contrast'
-                ? 'bg-[#CCFF00] text-black border-black font-bold shadow-[2px_2px_0px_#000]'
-                : 'bg-[#12141C] text-[#8E95A5] border-[#262A3B] hover:text-white'
-            }`}
-          >
-            HIGH-CONTRAST
+            Aim Range
           </button>
           <button
             onClick={() => setBgMode('dark')}
-            className={`px-2.5 py-1 border text-[11px] font-mono transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
               bgMode === 'dark'
-                ? 'bg-[#CCFF00] text-black border-black font-bold shadow-[2px_2px_0px_#000]'
-                : 'bg-[#12141C] text-[#8E95A5] border-[#262A3B] hover:text-white'
+                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
             }`}
           >
-            PITCH BLACK
+            Dark
+          </button>
+          <button
+            onClick={() => setBgMode('light')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+              bgMode === 'light'
+                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+            }`}
+          >
+            Light
+          </button>
+          <button
+            onClick={() => setBgMode('contrast')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+              bgMode === 'contrast'
+                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+            }`}
+          >
+            Chroma
           </button>
         </div>
 
+        {/* Right: Zoom Level Selector & Shot Simulator */}
         <div className="flex items-center gap-2">
+          {/* Zoom Segmented Control */}
+          <div className="flex items-center p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs font-mono">
+            {[1, 2, 4, 8].map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setZoomLevel(lvl)}
+                className={`px-2 py-0.5 rounded-md font-medium transition-all ${
+                  zoomLevel === lvl
+                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)]'
+                }`}
+                title={`Zoom ${lvl}x`}
+              >
+                {lvl}x
+              </button>
+            ))}
+          </div>
+
+          {/* Test Shot Button */}
           <button
-            onClick={() => {
-              setIsFiring(true);
-              const r = 8 * (config.recoilMultiplier || 1.0);
-              setBloom(r);
-              if (onTriggerRecoil) onTriggerRecoil(r);
-              setTimeout(() => {
-                setBloom(0);
-                setIsFiring(false);
-              }, 180);
-            }}
-            className="brutal-btn py-1 px-3 text-[11px] bg-[#181B26] text-[#CCFF00] border-[#262A3B] hover:border-[#CCFF00]"
+            onClick={triggerRecoilPulse}
+            className="btn-secondary text-xs"
+            title="Simulate weapon recoil expansion"
           >
-            <Play size={10} className="fill-current" />
-            SIMULATE SHOT
+            <Play size={12} className="fill-current" />
+            <span>Test Shot</span>
           </button>
+
+          {/* Re-center Button if offset */}
+          {(config.offsetX !== 0 || config.offsetY !== 0) && (
+            <button
+              onClick={onRecenter}
+              className="btn-ghost text-xs text-[var(--text-secondary)] hover:text-[var(--accent)]"
+              title="Reset offset to exact center (0, 0)"
+            >
+              <RotateCcw size={12} />
+              <span>Center</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ function createMenuWindow() {
     minWidth: 980,
     minHeight: 680,
     frame: false,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#0D0E12',
     icon: path.join(__dirname, 'assets', 'icon.png'),
     show: false,
     webPreferences: {
@@ -260,6 +260,11 @@ function setupIPC() {
 
   ipcMain.handle('set-store-key', (_e, key, val) => {
     store.set(key, val);
+    return true;
+  });
+
+  ipcMain.handle('save-store', (_e, fullData) => {
+    store.saveData(fullData);
     return true;
   });
 
