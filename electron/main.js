@@ -1,14 +1,17 @@
-const { app, BrowserWindow, screen, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, screen, ipcMain, globalShortcut, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const store = require('./store');
 const streamerServer = require('./streamerServer');
 const gameDetector = require('./gameDetector');
 
 let menuWindow = null;
 let overlayWindow = null;
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+let tray = null;
+let isQuitting = false;
+let hasShownTrayNotification = false;
 
-const fs = require('fs');
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 function createMenuWindow() {
   menuWindow = new BrowserWindow({
@@ -18,6 +21,7 @@ function createMenuWindow() {
     minHeight: 680,
     frame: false,
     backgroundColor: '#0A0A0A',
+    icon: path.join(__dirname, 'assets', 'icon.png'),
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -40,10 +44,19 @@ function createMenuWindow() {
     menuWindow.show();
   });
 
-  menuWindow.on('closed', () => {
-    menuWindow = null;
-    if (overlayWindow) {
-      overlayWindow.close();
+  // When closing, minimize to system tray instead of exiting
+  menuWindow.on('close', (e) => {
+    if (!isQuitting) {
+      e.preventDefault();
+      menuWindow.hide();
+
+      if (tray && process.platform === 'win32' && !hasShownTrayNotification) {
+        tray.displayBalloon({
+          title: 'OpenCrosshair',
+          content: 'OpenCrosshair is minimized to your system tray. The crosshair overlay remains active on screen.',
+        });
+        hasShownTrayNotification = true;
+      }
     }
   });
 }
@@ -123,6 +136,123 @@ function positionOverlayOnDisplay(displayId) {
   applyDpiCompensation(overlayWindow, target);
 }
 
+function toggleOverlayState(explicitState) {
+  const settings = store.get('settings') || {};
+  const newState = explicitState !== undefined ? explicitState : !settings.overlayEnabled;
+  settings.overlayEnabled = newState;
+  store.set('settings', settings);
+
+  if (overlayWindow && !overlayWindow.isDestroyed()) {
+    if (newState) {
+      overlayWindow.showInactive();
+    } else {
+      overlayWindow.hide();
+    }
+  }
+
+  if (menuWindow && !menuWindow.isDestroyed()) {
+    menuWindow.webContents.send('overlay-state-changed', newState);
+  }
+
+  updateTray();
+  return newState;
+}
+
+function recenterOverlay() {
+  const current = store.get('activeCrosshair') || {};
+  current.offsetX = 0;
+  current.offsetY = 0;
+  store.set('activeCrosshair', current);
+
+  if (overlayWindow && !overlayWindow.isDestroyed()) {
+    overlayWindow.webContents.send('crosshair-update', current);
+  }
+
+  if (menuWindow && !menuWindow.isDestroyed()) {
+    menuWindow.webContents.send('crosshair-recentered', current);
+  }
+}
+
+function updateTray() {
+  if (!tray) return;
+
+  const settings = store.get('settings') || {};
+  const isOverlayOn = settings.overlayEnabled !== false;
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open Studio',
+      click: () => {
+        if (!menuWindow) createMenuWindow();
+        else {
+          menuWindow.show();
+          menuWindow.focus();
+        }
+      },
+    },
+    {
+      label: `Overlay: ${isOverlayOn ? 'Active' : 'Muted'} (Ctrl+Shift+X)`,
+      type: 'checkbox',
+      checked: isOverlayOn,
+      click: () => {
+        toggleOverlayState();
+      },
+    },
+    {
+      label: 'Re-Center Crosshair (Ctrl+Shift+C)',
+      click: () => {
+        recenterOverlay();
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit OpenCrosshair',
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setToolTip(`OpenCrosshair // ${isOverlayOn ? 'Overlay Active' : 'Overlay Muted'}`);
+  tray.setContextMenu(contextMenu);
+}
+
+function createTray() {
+  const iconPath = path.join(__dirname, 'assets', 'tray.png');
+  let icon;
+
+  if (fs.existsSync(iconPath)) {
+    icon = nativeImage.createFromPath(iconPath);
+  } else {
+    icon = nativeImage.createEmpty();
+  }
+
+  tray = new Tray(icon);
+
+  tray.on('click', () => {
+    if (!menuWindow) {
+      createMenuWindow();
+    } else if (menuWindow.isVisible()) {
+      menuWindow.focus();
+    } else {
+      menuWindow.show();
+      menuWindow.focus();
+    }
+  });
+
+  tray.on('double-click', () => {
+    if (!menuWindow) {
+      createMenuWindow();
+    } else {
+      menuWindow.show();
+      menuWindow.focus();
+    }
+  });
+
+  updateTray();
+}
+
 function setupIPC() {
   ipcMain.handle('get-store', () => {
     return store.getAll();
@@ -178,24 +308,7 @@ function setupIPC() {
   });
 
   ipcMain.handle('toggle-overlay', (_e, explicitState) => {
-    const settings = store.get('settings') || {};
-    const newState = explicitState !== undefined ? explicitState : !settings.overlayEnabled;
-    settings.overlayEnabled = newState;
-    store.set('settings', settings);
-
-    if (overlayWindow && !overlayWindow.isDestroyed()) {
-      if (newState) {
-        overlayWindow.showInactive();
-      } else {
-        overlayWindow.hide();
-      }
-    }
-
-    if (menuWindow && !menuWindow.isDestroyed()) {
-      menuWindow.webContents.send('overlay-state-changed', newState);
-    }
-
-    return newState;
+    return toggleOverlayState(explicitState);
   });
 
   ipcMain.handle('get-displays', () => {
@@ -230,6 +343,7 @@ function setupIPC() {
     }
   });
 
+  // Close hides to system tray!
   ipcMain.on('window-close', () => {
     if (menuWindow) menuWindow.close();
   });
@@ -257,23 +371,17 @@ app.whenReady().then(() => {
 
   createMenuWindow();
   createOverlayWindow();
+  createTray();
 
   // Register Global Hotkeys
   const toggleKey = store.get('settings')?.hotkeys?.toggleOverlay || 'Control+Shift+X';
   globalShortcut.register(toggleKey, () => {
-    const settings = store.get('settings') || {};
-    const newState = !settings.overlayEnabled;
-    settings.overlayEnabled = newState;
-    store.set('settings', settings);
+    toggleOverlayState();
+  });
 
-    if (overlayWindow && !overlayWindow.isDestroyed()) {
-      if (newState) overlayWindow.showInactive();
-      else overlayWindow.hide();
-    }
-
-    if (menuWindow && !menuWindow.isDestroyed()) {
-      menuWindow.webContents.send('overlay-state-changed', newState);
-    }
+  const recenterKey = store.get('settings')?.hotkeys?.recenter || 'Control+Shift+C';
+  globalShortcut.register(recenterKey, () => {
+    recenterOverlay();
   });
 
   // Start Game Detector
@@ -285,21 +393,30 @@ app.whenReady().then(() => {
   }
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
+    if (menuWindow) {
+      menuWindow.show();
+      menuWindow.focus();
+    } else {
       createMenuWindow();
-      createOverlayWindow();
     }
   });
+});
+
+app.on('before-quit', () => {
+  isQuitting = true;
 });
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
   gameDetector.stop();
   streamerServer.stop();
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+// Do not quit when window is closed; remain in system tray!
+app.on('window-all-closed', (e) => {
+  e.preventDefault();
 });
