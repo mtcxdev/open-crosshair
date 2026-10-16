@@ -1,42 +1,74 @@
-# OPEN CROSSHAIR // V1.0
+# 🎯 OPEN CROSSHAIR // V1.0
 
-> An open-source, 100% offline, local-first precision crosshair overlay and vector studio built with a high-contrast brutalist design system.
+<p align="center">
+  <img src="https://img.shields.io/badge/LICENSE-MIT-CCFF00?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
+  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-00F0FF?style=for-the-badge&logo=electron&logoColor=black" alt="Platform" />
+  <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-00FF66?style=for-the-badge" alt="Anti-Cheat" />
+  <img src="https://img.shields.io/badge/OFFLINE-ZERO%20TELEMETRY-FF0055?style=for-the-badge" alt="Offline" />
+</p>
+
+> **OpenCrosshair** is a 100% free, open-source, local-first precision crosshair overlay and vector studio built with a high-contrast Neo-Brutalist design system. It recreates the multi-window architecture of professional overlay tools with zero subscriptions, zero ads, zero telemetry, and zero internet requirements.
 
 ---
 
-## ⚡ Features
+## ⚡ Key Highlights
 
 * **🖥️ Always-On-Top Desktop Overlay**:
-  * Seamless click-through HUD window (`screen-saver` priority) designed for borderless windowed and desktop gaming.
-  * Windows High-DPI compensation to preserve 1:1 pixel sharpness at any scale (100%, 125%, 150%, 200%).
-  * True center pixel snapping (`snapSvgTargetsPixelCenter`).
-  * Multi-monitor support: choose which display to render on.
-* **🎨 Full Multi-Layer Vector Studio**:
-  * **Crosshair Arms**: Independent top/bottom/left/right arm controls, T-shape mode, corner rounding, outline thickness, gap, and color.
+  * Real-time transparent click-through HUD window (`screen-saver` priority level).
+  * Automatic Windows High-DPI compensation (100%, 125%, 150%, 200%) preserving crisp 1:1 pixel rendering.
+  * Sub-pixel coordinate snapping to prevent antialiasing blur around screen center.
+  * Multi-monitor support: select any target display.
+* **🎨 Precision Vector Crosshair Studio**:
+  * **Independent Arms**: Top/Bottom/Left/Right controls, T-Shape toggle, corner rounding, outline thickness, gap, and colors.
   * **Center Dot**: Square or circular dot, customizable radius, color, and outline.
   * **Tactical Ring**: Customizable radius, line thickness, dashed segment patterns, and center fill with opacity.
   * **Sniper Chevrons**: Upright or inverted V-shapes with angle offsets.
-  * **Shadows & Glow**: Drop shadows and soft glow effects.
-  * **Recoil Dynamics**: Live firing bloom and recoil simulation with customizable recovery rates.
-* **🏆 Pro Esports Vault & Presets (100% Offline)**:
+  * **Shadows & Glow**: Drop shadows and soft glow effects for high visibility against complex game textures.
+  * **Dynamic Recoil & ADS**: Live firing bloom simulation with customizable recovery rates and Aim-Down-Sights (ADS) zoom.
+* **🏆 Pro Esports Vault (100% Offline)**:
   * Includes pre-tuned pro player presets (CS2: s1mple, ZywOo; Valorant: TenZ, aspas; Apex Legends, Rust, Overwatch 2).
   * Save, organize, and duplicate unlimited custom crosshairs locally.
-  * Offline **Sharecodes** (`OC-XXXXX`): Copy and paste crosshairs with one click without any web accounts or servers.
+  * **Sharecodes (`OC-XXXXX`)**: One-click copy/paste shareable codes without any web accounts or servers.
 * **🎮 Game Profile Auto-Detection**:
-  * Maps game executables (e.g. `cs2.exe`, `VALORANT-Win64-Shipping.exe`, `r5apex.exe`) to your favorite crosshairs.
+  * Maps game executables (e.g. `cs2.exe`, `VALORANT-Win64-Shipping.exe`, `r5apex.exe`, `RustClient.exe`) to your favorite crosshairs.
   * Automatically switches crosshair when games launch or gain foreground focus.
 * **📡 OBS & Streamlabs Streamer Hub**:
   * Built-in local HTTP & WebSocket streaming server running at `http://localhost:3175`.
   * Add as a transparent **Browser Source** in OBS Studio to capture your crosshair cleanly without capturing desktop overlays.
-* **🔒 100% Free & Anti-Cheat Safe**:
-  * No subscriptions, microtransactions, or internet connection required.
+* **🔒 100% Anti-Cheat Safe**:
   * Zero memory injection into game processes — completely safe for VAC, Vanguard, EAC, and BattlEye.
+
+---
+
+## 📥 Downloads & Installation
+
+Pre-built binaries are available under [Releases](https://github.com/mtcxdev/open-crosshair/releases):
+
+### Windows (x64)
+* **Portable (`.exe`)**: `OpenCrosshair 1.0.0.exe` — Run directly without installation.
+* **Installer (`.exe`)**: `OpenCrosshair Setup 1.0.0.exe` — Standard desktop installer with Start Menu shortcuts.
+
+### Linux
+* **AppImage**: `OpenCrosshair-1.0.0.AppImage` — Run on any modern Linux distribution (`chmod +x OpenCrosshair-*.AppImage && ./OpenCrosshair-*.AppImage`).
+* **Debian Package (`.deb`)**: `opencrosshair_1.0.0_amd64.deb` (`sudo dpkg -i opencrosshair_*.deb`).
+
+### macOS (Intel & Apple Silicon)
+* **DMG**: `OpenCrosshair-1.0.0.dmg` — Drag & Drop to Applications folder.
+
+---
+
+## ⌨️ Global Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl + Shift + X` | Toggle overlay visibility (Show / Hide) |
+| `Ctrl + Shift + C` | Re-center overlay to primary display center |
 
 ---
 
 ## 🏗️ Architecture
 
-OpenCrosshair mirrors the proven dual-window architecture reverse-engineered from Crosshair X:
+OpenCrosshair mirrors the proven dual-window, low-latency architecture reverse-engineered from professional overlay tools:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -61,50 +93,52 @@ OpenCrosshair mirrors the proven dual-window architecture reverse-engineered fro
 
 ---
 
-## ⌨️ Global Shortcuts
-
-| Shortcut | Action |
-| :--- | :--- |
-| `Ctrl + Shift + X` | Toggle overlay visibility (Show / Hide) |
-| `Ctrl + Shift + C` | Re-center overlay to primary display center |
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-* [Node.js](https://nodejs.org) (v18 or higher)
-
-### Run Locally
-```bash
-# Clone the repository
-cd C:\Users\DELL\Projects\open-crosshair
-
-# Install dependencies
-npm install
-
-# Run the app
-npm start
-```
-
-### Development Mode (with Live Hot-Reload)
-```bash
-npm run dev
-```
-
----
-
-## 📹 Setting Up in OBS Studio
+## 📹 Setting Up in OBS Studio / Streamlabs
 
 1. In OBS Studio, under **Sources**, click **+** and choose **Browser**.
 2. Name the source `Crosshair Overlay`.
 3. Set **URL** to: `http://localhost:3175`
-4. Set **Width** and **Height** to match your stream resolution (e.g., `1920` x `1080`).
-5. Check **Shutdown source when not visible** (optional).
-6. Click **OK**. Your crosshair will render in real time on your stream with a transparent background!
+4. Set **Width** and **Height** to match your canvas resolution (e.g. `1920` x `1080` or `2560` x `1440`).
+5. Click **OK**. Your crosshair will render in real time on your stream with a transparent background.
+
+---
+
+## 🛠️ Building From Source
+
+### Prerequisites
+* [Node.js](https://nodejs.org) (v18 or higher)
+* [npm](https://www.npmjs.com/) (v9 or higher)
+
+### Setup & Run
+```bash
+# Clone the repository
+git clone https://github.com/mtcxdev/open-crosshair.git
+cd open-crosshair
+
+# Install dependencies
+npm install
+
+# Run in production mode
+npm start
+
+# Run in development mode (with live HMR)
+npm run dev
+```
+
+### Build Distribution Packages
+```bash
+# Build Windows .exe (portable & setup installer)
+npm run dist
+
+# Build standalone portable .exe only
+npm run dist:portable
+
+# Multi-platform build
+npm run dist:all
+```
 
 ---
 
 ## 📄 License
 
-MIT License — Free and open source for all players.
+Distributed under the **MIT License**. Free and open-source for all players.

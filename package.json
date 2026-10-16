@@ -1,23 +1,32 @@
 {
   "name": "open-crosshair",
   "version": "1.0.0",
-  "description": "Open source, 100% offline Crosshair overlay and studio with brutalist UI",
+  "description": "An open-source, 100% offline, local-first precision crosshair overlay and vector studio with brutalist UI.",
   "main": "electron/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtcxdev/open-crosshair.git"
+  },
   "scripts": {
     "dev:renderer": "vite",
     "dev:electron": "electron .",
     "dev": "concurrently -k \"vite\" \"electron .\"",
     "build": "vite build",
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "vite build && electron-builder --win",
+    "dist:portable": "vite build && electron-builder --win portable",
+    "dist:all": "vite build && electron-builder -mwl"
   },
   "keywords": [
     "crosshair",
     "overlay",
     "gaming",
     "esports",
-    "open-source"
+    "open-source",
+    "brutalist",
+    "obs-studio"
   ],
-  "author": "OpenCrosshair",
+  "author": "MTCX DEV <mtcx999@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "lucide-react": "^1.58.0",
@@ -26,11 +35,52 @@
     "ws": "^8.22.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
+    "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.6",
     "electron": "^44.8.0",
-    "tailwindcss": "^4.3.3",
+    "electron-builder": "^26.7.0",
+    "tailwindcss": "^4.1.18",
     "vite": "^8.3.4"
+  },
+  "build": {
+    "appId": "com.opencrosshair.app",
+    "productName": "OpenCrosshair",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "overlay/**/*",
+      "streamer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        },
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "OpenCrosshair"
+    },
+    "linux": {
+      "target": ["AppImage", "tar.gz"],
+      "category": "Game"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.games"
+    }
   }
 }
