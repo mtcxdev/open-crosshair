@@ -80,7 +80,8 @@
     },
     "mac": {
       "target": ["dmg", "zip"],
-      "category": "public.app-category.games"
+      "category": "public.app-category.games",
+      "identity": null
     }
   }
 }
