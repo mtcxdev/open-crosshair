@@ -10,7 +10,8 @@ import {
   Redo2,
   Crosshair,
   ShieldCheck,
-  CircleDot
+  CircleDot,
+  Heart
 } from 'lucide-react';
 
 export function Header({
@@ -26,6 +27,7 @@ export function Header({
   hasUnsavedChanges,
   onSaveCurrent,
   activeProfileName,
+  onOpenDonation,
 }) {
   const isElectron = typeof window !== 'undefined' && !!window.api;
 
@@ -45,7 +47,7 @@ export function Header({
               OpenCrosshair
             </span>
             <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
-              v1.0.1
+              v1.1.0
             </span>
           </div>
         </div>
@@ -140,6 +142,16 @@ export function Header({
             </select>
           </div>
         )}
+
+        {/* Donate Button Pill */}
+        <button
+          onClick={onOpenDonation}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 text-xs font-medium transition-all shadow-sm"
+          title="Support & Donate to OpenCrosshair"
+        >
+          <Heart size={12} className="fill-rose-500/30 text-rose-400" />
+          <span className="hidden sm:inline font-medium">Donate</span>
+        </button>
       </div>
 
       {/* Right: Window Controls */}

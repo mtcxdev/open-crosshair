@@ -1,13 +1,14 @@
-# 🎯 OPEN CROSSHAIR // V1.0
+# 🎯 OpenCrosshair // v1.1.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/LICENSE-MIT-CCFF00?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
-  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-00F0FF?style=for-the-badge&logo=electron&logoColor=black" alt="Platform" />
-  <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-00FF66?style=for-the-badge" alt="Anti-Cheat" />
-  <img src="https://img.shields.io/badge/OFFLINE-ZERO%20TELEMETRY-FF0055?style=for-the-badge" alt="Offline" />
+  <img src="https://img.shields.io/badge/VERSION-v1.1.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
+  <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
+  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Platform" />
+  <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-green?style=for-the-badge" alt="Anti-Cheat" />
+  <img src="https://img.shields.io/badge/OFFLINE-ZERO%20TELEMETRY-rose?style=for-the-badge" alt="Offline" />
 </p>
 
-> **OpenCrosshair** is a 100% free, open-source, local-first precision crosshair overlay and vector studio built with a high-contrast Neo-Brutalist design system. It recreates the multi-window architecture of professional overlay tools with zero subscriptions, zero ads, zero telemetry, and zero internet requirements.
+> **OpenCrosshair** is a 100% free, open-source, local-first precision crosshair overlay and vector studio with a refined, customizable modern UI. Recreating the multi-window architecture of professional overlay tools with zero subscriptions, zero ads, zero telemetry, and zero internet dependencies.
 
 ---
 
@@ -42,18 +43,18 @@
 
 ## 📥 Downloads & Installation
 
-Pre-built binaries are available under [Releases](https://github.com/mtcxdev/open-crosshair/releases):
+> [!TIP]
+> 📂 All releases are documented with release notes, package sizes, and SHA-256 checksums in the [**Releases Directory (`releases/`)**](releases/README.md).
 
-### Windows (x64)
-* **Portable (`.exe`)**: `OpenCrosshair 1.0.0.exe` — Run directly without installation.
-* **Installer (`.exe`)**: `OpenCrosshair Setup 1.0.0.exe` — Standard desktop installer with Start Menu shortcuts.
+### Latest Release: [OpenCrosshair v1.1.0](releases/v1.1.0/README.md)
 
-### Linux
-* **AppImage**: `OpenCrosshair-1.0.0.AppImage` — Run on any modern Linux distribution (`chmod +x OpenCrosshair-*.AppImage && ./OpenCrosshair-*.AppImage`).
-* **Debian Package (`.deb`)**: `opencrosshair_1.0.0_amd64.deb` (`sudo dpkg -i opencrosshair_*.deb`).
-
-### macOS (Intel & Apple Silicon)
-* **DMG**: `OpenCrosshair-1.0.0.dmg` — Drag & Drop to Applications folder.
+| Platform | Format | Package | Size | Direct Download |
+| :--- | :--- | :--- | :--- | :--- |
+| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.0.exe` | **84.09 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.Setup.1.1.0.exe) |
+| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.1.0.exe` | **83.86 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.1.1.0.exe) |
+| **Linux** | **AppImage** | `OpenCrosshair-1.1.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair-1.1.0.AppImage) |
+| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/open-crosshair_1.1.0_amd64.deb) |
+| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair-1.1.0-arm64.dmg) |
 
 ---
 
@@ -136,6 +137,28 @@ npm run dist:portable
 # Multi-platform build
 npm run dist:all
 ```
+
+---
+
+## 💖 Support & Donate
+
+OpenCrosshair is 100% free, open-source software built and maintained for the gaming community. It will forever remain free with zero locked features, zero ads, zero accounts, and zero telemetry.
+
+If OpenCrosshair improves your gameplay or helps you build the perfect crosshair, consider supporting ongoing development:
+
+<p align="left">
+  <a href="https://github.com/sponsors/mtcxdev" target="_blank">
+    <img src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors" />
+  </a>
+  <a href="https://buymeacoffee.com/mtcxdev" target="_blank">
+    <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me A Coffee" />
+  </a>
+</p>
+
+### 🪙 Direct Crypto Donations (1-Click Copy in Desktop App)
+* **Bitcoin (BTC)**: `bc1q9h60032l84p3n8y793r33q604v0n70vxq3h888`
+* **Ethereum / USDT (ERC-20)**: `0x71C94bCde17D9a572c6F255a6d36e2f1704D1B99`
+* **Solana (SOL)**: `7NxU5p5aZ9L7w2GvB98VwM84V8xV546Zk48N9x2kG5v1`
 
 ---
 

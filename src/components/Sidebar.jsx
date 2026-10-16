@@ -7,10 +7,11 @@ import {
   Settings as SettingsIcon,
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  Heart
 } from 'lucide-react';
 
-export function Sidebar({ activeNav, onSelectNav, theme, onToggleTheme, onOpenSettings }) {
+export function Sidebar({ activeNav, onSelectNav, theme, onToggleTheme, onOpenSettings, onOpenDonation }) {
   const navItems = [
     { id: 'studio', label: 'Studio', icon: Crosshair },
     { id: 'presets', label: 'Presets', icon: LayoutGrid },
@@ -52,6 +53,15 @@ export function Sidebar({ activeNav, onSelectNav, theme, onToggleTheme, onOpenSe
 
       {/* Bottom Nav / Settings & Theme Toggle */}
       <div className="flex flex-col gap-1.5 w-full px-2">
+        {/* Support & Donate Button */}
+        <button
+          onClick={onOpenDonation}
+          className="w-full h-10 rounded-xl flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all group"
+          title="Support & Donate (100% Free & Open Source)"
+        >
+          <Heart size={17} className="transition-transform group-hover:scale-115 fill-rose-500/20" />
+        </button>
+
         {/* Quick Theme Toggle */}
         <button
           onClick={onToggleTheme}

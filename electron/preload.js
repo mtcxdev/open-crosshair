@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('api', {
   maximize: () => ipcRenderer.send('window-maximize'),
   close: () => ipcRenderer.send('window-close'),
 
+  // External Navigation & Browser
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+
   saveStore: (data) => ipcRenderer.invoke('save-store', data),
 
   // Event Listeners

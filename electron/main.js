@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen, ipcMain, globalShortcut, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, screen, ipcMain, globalShortcut, Tray, Menu, nativeImage, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const store = require('./store');
@@ -351,6 +351,15 @@ function setupIPC() {
   // Close hides to system tray!
   ipcMain.on('window-close', () => {
     if (menuWindow) menuWindow.close();
+  });
+
+  // Open external links in default OS browser
+  ipcMain.handle('open-external', (_e, url) => {
+    if (url && (url.startsWith('https://') || url.startsWith('http://'))) {
+      shell.openExternal(url);
+      return true;
+    }
+    return false;
   });
 }
 

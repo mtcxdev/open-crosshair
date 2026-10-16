@@ -11,7 +11,8 @@ import {
   Sun,
   Moon,
   Laptop,
-  Check
+  Check,
+  Heart
 } from 'lucide-react';
 import { generateCrosshairSVG } from '../utils/svgGenerator';
 
@@ -27,6 +28,7 @@ export function SettingsModal({
   allData,
   onImportBackup,
   onShowToast,
+  onOpenDonation,
 }) {
   const [confirmReset, setConfirmReset] = useState(false);
 
@@ -196,6 +198,34 @@ export function SettingsModal({
               </kbd>
             </div>
           </div>
+        </div>
+
+        {/* ================= Support & Donate ================= */}
+        <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-rose-500/20 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-main)]">
+              <Heart size={14} className="text-rose-400 fill-rose-500/20" />
+              <span>Support Open Source Development</span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
+              100% Free Software
+            </span>
+          </div>
+
+          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+            OpenCrosshair has zero subscriptions, zero ads, and zero telemetry. If you enjoy using it, consider donating to keep maintenance, new presets, and multiplatform builds thriving!
+          </p>
+
+          <button
+            onClick={() => {
+              onClose();
+              if (onOpenDonation) onOpenDonation();
+            }}
+            className="w-full py-2 px-3 rounded-lg bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50 text-rose-400 font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
+          >
+            <Heart size={13} className="fill-rose-500/30" />
+            <span>Open Donation & Crypto Options</span>
+          </button>
         </div>
 
         {/* ================= Backup & SVG Export ================= */}

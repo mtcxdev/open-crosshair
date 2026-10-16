@@ -7,6 +7,7 @@ import { Presets } from './components/Presets';
 import { GameProfiles } from './components/GameProfiles';
 import { OverlayHub } from './components/OverlayHub';
 import { SettingsModal } from './components/SettingsModal';
+import { DonationModal } from './components/DonationModal';
 import { Toast } from './components/Toast';
 import { DEFAULT_PRESETS } from './constants/defaultPresets';
 import { generateCrosshairSVG } from './utils/svgGenerator';
@@ -21,6 +22,7 @@ export function App() {
   const [selectedDisplayId, setSelectedDisplayId] = useState(null);
   const [activeFocusedProfile, setActiveFocusedProfile] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
   // Theme & Accent States
@@ -286,6 +288,7 @@ export function App() {
         onRedo={handleRedo}
         hasUnsavedChanges={false}
         activeProfileName={activeFocusedProfile?.gameName}
+        onOpenDonation={() => setDonationOpen(true)}
       />
 
       {/* Main Workspace Body */}
@@ -297,6 +300,7 @@ export function App() {
           theme={theme}
           onToggleTheme={handleToggleTheme}
           onOpenSettings={() => setSettingsOpen(true)}
+          onOpenDonation={() => setDonationOpen(true)}
         />
 
         {/* Central Workspace Switcher */}
@@ -395,6 +399,14 @@ export function App() {
             window.api.saveStore?.(backup);
           }
         }}
+        onShowToast={showToast}
+        onOpenDonation={() => setDonationOpen(true)}
+      />
+
+      {/* Community Donation & Sponsorship Modal */}
+      <DonationModal
+        isOpen={donationOpen}
+        onClose={() => setDonationOpen(false)}
         onShowToast={showToast}
       />
 
