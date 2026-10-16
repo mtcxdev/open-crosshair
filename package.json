@@ -75,7 +75,7 @@
       "shortcutName": "OpenCrosshair"
     },
     "linux": {
-      "target": ["AppImage", "tar.gz"],
+      "target": ["AppImage", "deb", "tar.gz"],
       "category": "Game"
     },
     "mac": {
