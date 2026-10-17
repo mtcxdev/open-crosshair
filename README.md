@@ -1,7 +1,7 @@
-# 🎯 OpenCrosshair // v1.1.0
+# 🎯 OpenCrosshair // v1.1.1
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-v1.1.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
+  <img src="https://img.shields.io/badge/VERSION-v1.1.1-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
   <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
   <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Platform" />
   <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-green?style=for-the-badge" alt="Anti-Cheat" />
@@ -33,8 +33,9 @@
 * **🎮 Game Profile Auto-Detection**:
   * Maps game executables (e.g. `cs2.exe`, `VALORANT-Win64-Shipping.exe`, `r5apex.exe`, `RustClient.exe`) to your favorite crosshairs.
   * Automatically switches crosshair when games launch or gain foreground focus.
-* **📡 OBS & Streamlabs Streamer Hub**:
-  * Built-in local HTTP & WebSocket streaming server running at `http://localhost:3175`.
+* **📡 OBS & Streamlabs Streamer Hub (Dynamic Multi-Port)**:
+  * Built-in local HTTP & WebSocket streaming server with automatic conflict scanning (falls back from 3175 to free ports).
+  * Custom port configurator directly inside the Overlay Hub.
   * Add as a transparent **Browser Source** in OBS Studio to capture your crosshair cleanly without capturing desktop overlays.
 * **🔒 100% Anti-Cheat Safe**:
   * Zero memory injection into game processes — completely safe for VAC, Vanguard, EAC, and BattlEye.
@@ -46,15 +47,15 @@
 > [!TIP]
 > 📂 All releases are documented with release notes, package sizes, and SHA-256 checksums in the [**Releases Directory (`releases/`)**](releases/README.md).
 
-### Latest Release: [OpenCrosshair v1.1.0](releases/v1.1.0/README.md)
+### Latest Release: [OpenCrosshair v1.1.1](releases/v1.1.1/README.md)
 
 | Platform | Format | Package | Size | Direct Download |
 | :--- | :--- | :--- | :--- | :--- |
-| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.0.exe` | **84.09 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.Setup.1.1.0.exe) |
-| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.1.0.exe` | **83.86 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.1.1.0.exe) |
-| **Linux** | **AppImage** | `OpenCrosshair-1.1.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair-1.1.0.AppImage) |
-| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/open-crosshair_1.1.0_amd64.deb) |
-| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair-1.1.0-arm64.dmg) |
+| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.1.exe` | **84.09 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair.Setup.1.1.1.exe) |
+| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.1.1.exe` | **83.86 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair.1.1.1.exe) |
+| **Linux** | **AppImage** | `OpenCrosshair-1.1.1.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair-1.1.1.AppImage) |
+| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.1_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/open-crosshair_1.1.1_amd64.deb) |
+| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.1-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair-1.1.1-arm64.dmg) |
 
 ---
 
