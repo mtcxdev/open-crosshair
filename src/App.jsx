@@ -23,6 +23,7 @@ export function App() {
   const [activeFocusedProfile, setActiveFocusedProfile] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [streamerInfo, setStreamerInfo] = useState({ port: 3175, url: 'http://localhost:3175', preferredPort: 3175 });
   const [toast, setToast] = useState(null);
 
   // Theme & Accent States
@@ -119,6 +120,15 @@ export function App() {
       window.api.onCrosshairRecentered((newCrosshair) => {
         setCrosshairConfig(newCrosshair);
         showToast({ message: 'Crosshair centered to pixel (0, 0)', type: 'info' });
+      });
+
+      // Get streamer server info & dynamic port updates
+      window.api.getStreamerInfo?.().then((info) => {
+        if (info) setStreamerInfo(info);
+      });
+
+      window.api.onStreamerPortBound?.((info) => {
+        if (info) setStreamerInfo(info);
       });
     }
   }, [showToast]);
@@ -273,6 +283,13 @@ export function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  const handleChangeStreamerPort = async (newPort) => {
+    if (window.api?.setStreamerPort) {
+      const res = await window.api.setStreamerPort(newPort);
+      if (res) setStreamerInfo(res);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--bg-base)] text-[var(--text-main)] font-sans antialiased">
       {/* Top Header Titlebar */}
@@ -365,6 +382,8 @@ export function App() {
                 displays={displays}
                 selectedDisplayId={selectedDisplayId}
                 onSelectDisplay={handleSelectDisplay}
+                streamerInfo={streamerInfo}
+                onChangeStreamerPort={handleChangeStreamerPort}
                 onShowToast={showToast}
               />
             </div>

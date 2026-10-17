@@ -34,6 +34,11 @@ OpenCrosshair v1.1.0 is a major milestone release delivering a completely reimag
 * **Direct Crypto Donations**: Built-in 1-click address copy for **Bitcoin (BTC)**, **Ethereum / USDT (ERC-20)**, and **Solana (SOL)**.
 * **Zero Paywalls**: OpenCrosshair remains 100% free with zero locked features, zero advertisements, and zero data collection.
 
+### 🌐 4. Dynamic Multi-Port Fallback & Single Instance Guard
+* **Automatic Port Conflict Resolution**: The OBS streaming server no longer relies on a single hardcoded port. If default port `3175` is occupied by another service or zombie process, OpenCrosshair automatically scans and falls back to the next free port (`3176`, `3177`...) without crashing.
+* **Custom Port Configuration**: Users can customize their preferred streaming port directly within the Overlay Hub.
+* **Single Instance Protection**: Implemented OS-level single instance locking (`app.requestSingleInstanceLock()`) so secondary launches automatically refocus the existing active window and prevent orphan processes from hoarding network ports.
+
 ---
 
 ## 📦 Distribution Packages & Verified Checksums
@@ -42,8 +47,8 @@ OpenCrosshair v1.1.0 is a major milestone release delivering a completely reimag
 
 | Asset File | Type | Size | SHA-256 Checksum | Download |
 | :--- | :--- | :--- | :--- | :--- |
-| `OpenCrosshair Setup 1.1.0.exe` | NSIS Installer | **84.09 MB** (80.19 MiB) | `2AFC97557CFDA1908DCFBA4AB8AABDA2CB128039A897816C80F729864E13242B` | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.Setup.1.1.0.exe) |
-| `OpenCrosshair 1.1.0.exe` | Portable Executable | **83.86 MB** (79.97 MiB) | `301A72570EFC4B798CB23B6906E9DF08F91202BB7DAD65C48B28F2D3C61CDE7E` | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.1.1.0.exe) |
+| `OpenCrosshair Setup 1.1.0.exe` | NSIS Installer | **84.09 MB** (80.19 MiB) | `79E5034F1744EDCBA85A2FB0029E89EA4503006C970F431109DD705C60AD47EE` | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.Setup.1.1.0.exe) |
+| `OpenCrosshair 1.1.0.exe` | Portable Executable | **83.86 MB** (79.97 MiB) | `98E825D5ACF620715ACA0F42DE944575BBEEC1C453CAC5E9F344E91D7A72C753` | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.0/OpenCrosshair.1.1.0.exe) |
 
 ### Linux & macOS Deliverables (Automated CI/CD)
 

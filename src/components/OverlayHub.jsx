@@ -10,7 +10,9 @@ import {
   Sparkles,
   ExternalLink,
   Sliders,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw,
+  Server
 } from 'lucide-react';
 
 export function OverlayHub({
@@ -19,16 +21,41 @@ export function OverlayHub({
   displays,
   selectedDisplayId,
   onSelectDisplay,
+  streamerInfo,
+  onChangeStreamerPort,
   onShowToast,
 }) {
   const [copied, setCopied] = useState(false);
-  const streamerUrl = 'http://localhost:3175';
+  const [customPort, setCustomPort] = useState('');
+  const [isChangingPort, setIsChangingPort] = useState(false);
+
+  const activePort = streamerInfo?.port || 3175;
+  const preferredPort = streamerInfo?.preferredPort || 3175;
+  const streamerUrl = streamerInfo?.url || `http://localhost:${activePort}`;
+  const isFallback = activePort !== preferredPort;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(streamerUrl);
     setCopied(true);
     if (onShowToast) onShowToast({ message: 'OBS Browser Source URL copied to clipboard!', type: 'success' });
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleApplyPort = async (e) => {
+    e.preventDefault();
+    const portNum = parseInt(customPort, 10);
+    if (isNaN(portNum) || portNum < 1024 || portNum > 65535) {
+      if (onShowToast) onShowToast({ message: 'Please enter a valid port between 1024 and 65535.', type: 'error' });
+      return;
+    }
+
+    setIsChangingPort(true);
+    if (onChangeStreamerPort) {
+      await onChangeStreamerPort(portNum);
+      if (onShowToast) onShowToast({ message: `Streamer server binding to port ${portNum}...`, type: 'success' });
+      setCustomPort('');
+    }
+    setIsChangingPort(false);
   };
 
   return (
@@ -129,9 +156,16 @@ export function OverlayHub({
               <Tv size={16} className="text-[var(--accent)]" />
               <span className="font-semibold text-xs text-[var(--text-main)]">OBS Studio & Streamlabs</span>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] text-[var(--accent)] font-mono text-[10px] font-semibold">
-              Port 3175 Online
-            </span>
+            <div className="flex items-center gap-1.5">
+              {isFallback && (
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-[10px]">
+                  Auto-routed (Port {preferredPort} Busy)
+                </span>
+              )}
+              <span className="px-2 py-0.5 rounded-full bg-[var(--accent-subtle)] border border-[var(--accent-border)] text-[var(--accent)] font-mono text-[10px] font-semibold">
+                Port {activePort} Online
+              </span>
+            </div>
           </div>
 
           <p className="text-[11px] text-[var(--text-secondary)]">
@@ -154,6 +188,34 @@ export function OverlayHub({
             </button>
           </div>
 
+          {/* Custom Port Configuration */}
+          <form onSubmit={handleApplyPort} className="pt-2 border-t border-[var(--border-subtle)] flex items-center gap-2">
+            <div className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)] shrink-0">
+              <Server size={13} className="text-[var(--text-tertiary)]" />
+              <span>Change Port:</span>
+            </div>
+            <input
+              type="number"
+              min="1024"
+              max="65535"
+              placeholder={`Default: ${preferredPort}`}
+              value={customPort}
+              onChange={(e) => setCustomPort(e.target.value)}
+              className="w-28 px-2 py-1 rounded-md bg-[var(--bg-base)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-main)] outline-none focus:border-[var(--accent)]"
+            />
+            <button
+              type="submit"
+              disabled={!customPort || isChangingPort}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                customPort && !isChangingPort
+                  ? 'bg-[var(--bg-surface-elevated)] border border-[var(--border-medium)] text-[var(--text-main)] hover:border-[var(--accent)]'
+                  : 'opacity-40 cursor-not-allowed text-[var(--text-tertiary)]'
+              }`}
+            >
+              {isChangingPort ? 'Binding...' : 'Set Port'}
+            </button>
+          </form>
+
           {/* Quick Guide */}
           <div className="space-y-2 pt-1 text-[11px] text-[var(--text-secondary)]">
             <div className="flex items-start gap-2">
@@ -162,7 +224,7 @@ export function OverlayHub({
             </div>
             <div className="flex items-start gap-2">
               <span className="w-4 h-4 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[10px] font-mono shrink-0 text-[var(--text-main)]">2</span>
-              <span>Paste URL <code className="text-[var(--accent)] font-mono">http://localhost:3175</code>, set Width to <strong className="text-[var(--text-main)]">1920</strong> and Height to <strong className="text-[var(--text-main)]">1080</strong>.</span>
+              <span>Paste URL <code className="text-[var(--accent)] font-mono">{streamerUrl}</code>, set Width to <strong className="text-[var(--text-main)]">1920</strong> and Height to <strong className="text-[var(--text-main)]">1080</strong>.</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="w-4 h-4 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[10px] font-mono shrink-0 text-[var(--text-main)]">3</span>

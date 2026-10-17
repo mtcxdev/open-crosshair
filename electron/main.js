@@ -13,6 +13,21 @@ let hasShownTrayNotification = false;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
+// Ensure only one instance of OpenCrosshair runs at a time
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  console.log('[App] Another instance of OpenCrosshair is already running. Exiting.');
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (menuWindow) {
+      if (menuWindow.isMinimized()) menuWindow.restore();
+      if (!menuWindow.isVisible()) menuWindow.show();
+      menuWindow.focus();
+    }
+  });
+}
+
 function createMenuWindow() {
   menuWindow = new BrowserWindow({
     width: 1220,
@@ -361,6 +376,34 @@ function setupIPC() {
     }
     return false;
   });
+
+  // Dynamic Streamer Port Query & Configuration
+  ipcMain.handle('get-streamer-info', () => {
+    return {
+      port: streamerServer.getPort(),
+      url: streamerServer.getUrl(),
+      preferredPort: streamerServer.preferredPort,
+    };
+  });
+
+  ipcMain.handle('set-streamer-port', async (_e, newPort) => {
+    const portNum = parseInt(newPort, 10);
+    if (portNum >= 1024 && portNum <= 65535) {
+      const settings = store.get('settings') || {};
+      settings.streamerPort = portNum;
+      store.set('settings', settings);
+
+      await streamerServer.restart(portNum, (actualPort, actualUrl) => {
+        if (menuWindow && !menuWindow.isDestroyed()) {
+          menuWindow.webContents.send('streamer-port-bound', { port: actualPort, url: actualUrl });
+        }
+      });
+    }
+    return {
+      port: streamerServer.getPort(),
+      url: streamerServer.getUrl(),
+    };
+  });
 }
 
 function onGameDetected(matchedProfile) {
@@ -379,9 +422,15 @@ function onGameDetected(matchedProfile) {
 app.whenReady().then(() => {
   setupIPC();
 
-  // Start OBS streamer server
+  // Start OBS streamer server with dynamic multi-port fallback
+  const preferredPort = store.get('settings')?.streamerPort || 3175;
   const activeCrosshair = store.get('activeCrosshair');
-  streamerServer.start(3175, activeCrosshair);
+  streamerServer.start(preferredPort, activeCrosshair, (actualPort, actualUrl) => {
+    console.log(`[StreamerServer] Active on ${actualUrl} (configured: ${preferredPort})`);
+    if (menuWindow && !menuWindow.isDestroyed()) {
+      menuWindow.webContents.send('streamer-port-bound', { port: actualPort, url: actualUrl });
+    }
+  });
 
   createMenuWindow();
   createOverlayWindow();

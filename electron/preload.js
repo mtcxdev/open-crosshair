@@ -25,6 +25,13 @@ contextBridge.exposeInMainWorld('api', {
   // External Navigation & Browser
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 
+  // OBS Streamer Port Management
+  getStreamerInfo: () => ipcRenderer.invoke('get-streamer-info'),
+  setStreamerPort: (port) => ipcRenderer.invoke('set-streamer-port', port),
+  onStreamerPortBound: (callback) => {
+    ipcRenderer.on('streamer-port-bound', (_event, data) => callback(data));
+  },
+
   saveStore: (data) => ipcRenderer.invoke('save-store', data),
 
   // Event Listeners
