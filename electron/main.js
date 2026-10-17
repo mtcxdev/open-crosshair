@@ -46,6 +46,18 @@ function createMenuWindow() {
     },
   });
 
+  menuWindow.webContents.on('console-message', (_e, level, message, line, sourceId) => {
+    console.log(`[Renderer Console] [lvl ${level}] ${message} (${sourceId}:${line})`);
+  });
+
+  menuWindow.webContents.on('did-fail-load', (_e, code, desc, url) => {
+    console.error(`[Renderer did-fail-load] code ${code}: ${desc} (${url})`);
+  });
+
+  menuWindow.webContents.on('render-process-gone', (_e, details) => {
+    console.error('[Renderer Process Gone]', details);
+  });
+
   const distPath = path.join(__dirname, '..', 'dist', 'index.html');
   if (process.env.VITE_DEV_SERVER_URL) {
     menuWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
@@ -58,6 +70,13 @@ function createMenuWindow() {
   menuWindow.once('ready-to-show', () => {
     menuWindow.show();
   });
+
+  // Fallback to guarantee window visibility even if ready-to-show is delayed
+  setTimeout(() => {
+    if (menuWindow && !menuWindow.isDestroyed() && !menuWindow.isVisible()) {
+      menuWindow.show();
+    }
+  }, 2000);
 
   // When closing, minimize to system tray instead of exiting
   menuWindow.on('close', (e) => {
@@ -234,38 +253,42 @@ function updateTray() {
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, 'assets', 'tray.png');
-  let icon;
+  try {
+    const iconPath = path.join(__dirname, 'assets', 'tray.png');
+    let icon;
 
-  if (fs.existsSync(iconPath)) {
-    icon = nativeImage.createFromPath(iconPath);
-  } else {
-    icon = nativeImage.createEmpty();
+    if (fs.existsSync(iconPath)) {
+      icon = nativeImage.createFromPath(iconPath);
+    } else {
+      icon = nativeImage.createEmpty();
+    }
+
+    tray = new Tray(icon);
+
+    tray.on('click', () => {
+      if (!menuWindow) {
+        createMenuWindow();
+      } else if (menuWindow.isVisible()) {
+        menuWindow.focus();
+      } else {
+        menuWindow.show();
+        menuWindow.focus();
+      }
+    });
+
+    tray.on('double-click', () => {
+      if (!menuWindow) {
+        createMenuWindow();
+      } else {
+        menuWindow.show();
+        menuWindow.focus();
+      }
+    });
+
+    updateTray();
+  } catch (err) {
+    console.warn('[Tray] Could not initialize status tray icon:', err.message);
   }
-
-  tray = new Tray(icon);
-
-  tray.on('click', () => {
-    if (!menuWindow) {
-      createMenuWindow();
-    } else if (menuWindow.isVisible()) {
-      menuWindow.focus();
-    } else {
-      menuWindow.show();
-      menuWindow.focus();
-    }
-  });
-
-  tray.on('double-click', () => {
-    if (!menuWindow) {
-      createMenuWindow();
-    } else {
-      menuWindow.show();
-      menuWindow.focus();
-    }
-  });
-
-  updateTray();
 }
 
 function setupIPC() {

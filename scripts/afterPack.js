@@ -11,15 +11,18 @@ exports.default = async function(context) {
 
   const appOutDir = context.appOutDir;
 
-  // Unneeded heavy DLLs and files for 2D desktop overlay
+  // Unneeded heavy files for 2D desktop overlay:
+  // - dxcompiler.dll (~24.5 MB) & dxil.dll (~1.4 MB): DirectX Shader Compiler for WebGPU (not used)
+  // - LICENSES.chromium.html (~20.5 MB): Third-party Chromium license bundle (not needed at runtime)
+  //
+  // CRITICAL NOTE: ffmpeg.dll and graphics fallback DLLs MUST NEVER be pruned.
+  // In Chromium/Electron, the renderer sandbox initialization strictly requires ffmpeg.dll
+  // and will terminate with a silent fatal crash ("Renderer process crashed") if missing,
+  // causing the desktop application window to remain blank.
   const filesToRemove = [
-    'dxcompiler.dll',          // ~24.5 MB: DirectX Shader Compiler for WebGPU (not used)
-    'dxil.dll',                // ~1.4 MB: DirectX Intermediate Language for WebGPU (not used)
-    'vk_swiftshader.dll',      // ~5.3 MB: Software Vulkan rasterizer (Direct3D 11 ANGLE is used)
-    'vulkan-1.dll',            // ~0.9 MB: Vulkan loader (Direct3D 11 ANGLE is used)
-    'ffmpeg.dll',              // ~3.1 MB: Audio/video decoding (OpenCrosshair is pure 2D canvas/SVG)
-    'LICENSES.chromium.html',  // ~20.5 MB: Third-party Chromium license bundle (not needed at runtime)
-    'vk_swiftshader_icd.json', // Manifest for removed vk_swiftshader.dll
+    'dxcompiler.dll',
+    'dxil.dll',
+    'LICENSES.chromium.html',
   ];
 
   for (const file of filesToRemove) {
@@ -27,7 +30,7 @@ exports.default = async function(context) {
     if (fs.existsSync(fullPath)) {
       try {
         fs.unlinkSync(fullPath);
-        console.log(`[afterPack] Pruned unused runtime library: ${file}`);
+        console.log(`[afterPack] Pruned non-essential file: ${file}`);
       } catch (err) {
         console.warn(`[afterPack] Could not remove ${file}:`, err.message);
       }

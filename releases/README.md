@@ -4,15 +4,15 @@ Welcome to the official OpenCrosshair release archive. All public releases are p
 
 ---
 
-## 🚀 Latest Stable Release: [v1.1.1](v1.1.1/README.md)
+## 🚀 Latest Stable Release: [v1.1.2](v1.1.2/README.md)
 
 | Platform | Format | Package Name | Size | Direct Download |
 | :--- | :--- | :--- | :--- | :--- |
-| **Windows** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.1.exe` | **84.09 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair.Setup.1.1.1.exe) |
-| **Windows** | **Portable (`.exe`)** | `OpenCrosshair 1.1.1.exe` | **83.86 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair.1.1.1.exe) |
-| **Linux** | **AppImage** | `OpenCrosshair-1.1.1.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair-1.1.1.AppImage) |
-| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.1_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/open-crosshair_1.1.1_amd64.deb) |
-| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.1-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.1/OpenCrosshair-1.1.1-arm64.dmg) |
+| **Windows** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.2.exe` | **86.24 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.Setup.1.1.2.exe) |
+| **Windows** | **Portable (`.exe`)** | `OpenCrosshair 1.1.2.exe` | **86.01 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.1.1.2.exe) |
+| **Linux** | **AppImage** | `OpenCrosshair-1.1.2.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair-1.1.2.AppImage) |
+| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.2_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/open-crosshair_1.1.2_amd64.deb) |
+| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.2-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair-1.1.2-arm64.dmg) |
 
 ---
 
@@ -22,8 +22,9 @@ Each release has dedicated documentation detailing the changes, installation not
 
 | Release Version | Release Date | Key Focus / Highlights | Release Folder | GitHub Tag |
 | :--- | :--- | :--- | :--- | :--- |
-| **v1.1.1** *(Latest)* | Oct 2026 | **Dynamic Multi-Port Fallback, OBS Port Configurator, Single-Instance Lock** | [📂 `releases/v1.1.1/`](v1.1.1/README.md) | [`v1.1.1`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.1.1) |
-| **v1.1.0** | Oct 2026 | **Modern UI Redesign, Themes & Accents, 80MB Installer Size Optimization, In-App Donation System** | [📂 `releases/v1.1.0/`](v1.1.0/README.md) | [`v1.1.0`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.1.0) |
+| **v1.1.2** *(Latest)* | Oct 2026 | **Critical Fix: Production Blank Screen & Renderer Sandbox Initialization** | [📂 `releases/v1.1.2/`](v1.1.2/README.md) | [`v1.1.2`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.1.2) |
+| **v1.1.1** | Oct 2026 | **Dynamic Multi-Port Fallback, OBS Port Configurator, Single-Instance Lock** | [📂 `releases/v1.1.1/`](v1.1.1/README.md) | [`v1.1.1`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.1.1) |
+| **v1.1.0** | Oct 2026 | **Modern UI Redesign, Themes & Accents, 80MB Installer Size Optimization, In-App Donation System** | [📂 `releases/v1.0.0/`](v1.1.0/README.md) | [`v1.1.0`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.1.0) |
 | **v1.0.1** | Oct 2026 | **System Tray Minimization, Multiplatform CI/CD Automation, Linux & macOS Support** | [📂 `releases/v1.0.1/`](v1.0.1/README.md) | [`v1.0.1`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.0.1) |
 | **v1.0.0** | Oct 2026 | **Initial Public Release, Dual-Window Electron Architecture, Vector Crosshair Studio** | [📂 `releases/v1.0.0/`](v1.0.0/README.md) | [`v1.0.0`](https://github.com/mtcxdev/open-crosshair/releases/tag/v1.0.0) |
 
@@ -35,7 +36,7 @@ All pre-compiled release executables are built strictly from open-source code wi
 
 ```powershell
 # Windows PowerShell
-Get-FileHash -Algorithm SHA256 "OpenCrosshair Setup 1.1.1.exe"
+Get-FileHash -Algorithm SHA256 "OpenCrosshair Setup 1.1.2.exe"
 ```
 
 ```bash
