@@ -1,7 +1,7 @@
-# 🎯 OpenCrosshair // v1.1.2
+# 🎯 OpenCrosshair // v1.3.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-v1.1.2-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
+  <img src="https://img.shields.io/badge/VERSION-v1.3.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
   <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
   <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Platform" />
   <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-green?style=for-the-badge" alt="Anti-Cheat" />
@@ -47,15 +47,15 @@
 > [!TIP]
 > 📂 All releases are documented with release notes, package sizes, and SHA-256 checksums in the [**Releases Directory (`releases/`)**](releases/README.md).
 
-### Latest Release: [OpenCrosshair v1.1.2](releases/v1.1.2/README.md)
+### Latest Release: [OpenCrosshair v1.3.0](releases/v1.3.0/README.md)
 
 | Platform | Format | Package | Size | Direct Download |
 | :--- | :--- | :--- | :--- | :--- |
-| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.1.2.exe` | **86.24 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.Setup.1.1.2.exe) |
-| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.1.2.exe` | **86.01 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.1.1.2.exe) |
-| **Linux** | **AppImage** | `OpenCrosshair-1.1.2.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair-1.1.2.AppImage) |
-| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.1.2_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/open-crosshair_1.1.2_amd64.deb) |
-| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.1.2-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair-1.1.2-arm64.dmg) |
+| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.3.0.exe` | **86.25 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair.Setup.1.3.0.exe) |
+| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.3.0.exe` | **86.02 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair.1.3.0.exe) |
+| **Linux** | **AppImage** | `OpenCrosshair-1.3.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair-1.3.0.AppImage) |
+| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.3.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/open-crosshair_1.3.0_amd64.deb) |
+| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.3.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair-1.3.0-arm64.dmg) |
 
 ---
 

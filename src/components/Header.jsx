@@ -47,7 +47,7 @@ export function Header({
               OpenCrosshair
             </span>
             <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
-              v1.1.2
+              v1.3.0
             </span>
           </div>
         </div>
