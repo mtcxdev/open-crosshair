@@ -1,7 +1,7 @@
 {
   "name": "open-crosshair",
-  "version": "1.2.0",
-  "description": "A polished, offline-first precision crosshair overlay and vector studio.",
+  "version": "1.3.0",
+  "description": "A precision crosshair studio with a redesigned workspace, live overlay, and game profiles.",
   "main": "electron/main.js",
   "repository": {
     "type": "git",
