@@ -163,75 +163,46 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
       </div>
 
       {/* Floating Canvas Control Toolbar */}
-      <div className="mt-3 flex items-center justify-between text-xs shrink-0">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
         {/* Left: Background Backdrop Presets */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
-          <button
-            onClick={() => setBgMode('grid')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-              bgMode === 'grid'
-                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-            }`}
-          >
-            Grid
-          </button>
-          <button
-            onClick={() => setBgMode('range')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-              bgMode === 'range'
-                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-            }`}
-          >
-            Aim Range
-          </button>
-          <button
-            onClick={() => setBgMode('dark')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-              bgMode === 'dark'
-                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-            }`}
-          >
-            Dark
-          </button>
-          <button
-            onClick={() => setBgMode('light')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-              bgMode === 'light'
-                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-            }`}
-          >
-            Light
-          </button>
-          <button
-            onClick={() => setBgMode('contrast')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-              bgMode === 'contrast'
-                ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-            }`}
-          >
-            Chroma
-          </button>
+        <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+          {[
+            { id: 'grid', label: 'Grid' },
+            { id: 'range', label: 'Aim Range' },
+            { id: 'dark', label: 'Dark' },
+            { id: 'light', label: 'Light' },
+            { id: 'contrast', label: 'Chroma' },
+          ].map((mode) => (
+            <button
+              key={mode.id}
+              type="button"
+              onClick={() => setBgMode(mode.id)}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                bgMode === mode.id
+                  ? 'bg-[var(--accent)] text-[var(--accent-foreground)] font-semibold shadow-sm'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+              }`}
+            >
+              {mode.label}
+            </button>
+          ))}
         </div>
 
-        {/* Right: Zoom Level Selector & Shot Simulator */}
+        {/* Right: Zoom Level Selector & Action Buttons */}
         <div className="flex items-center gap-2">
           {/* Zoom Segmented Control */}
-          <div className="flex items-center p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs font-mono">
+          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs font-mono">
             {[1, 2, 4, 8].map((lvl) => (
               <button
                 key={lvl}
+                type="button"
                 onClick={() => setZoomLevel(lvl)}
                 className={`px-2 py-0.5 rounded-md font-medium transition-all ${
                   zoomLevel === lvl
-                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)]'
+                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold shadow-sm border border-[var(--accent-border)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
                 }`}
-                title={`Zoom ${lvl}x`}
+                title={`Canvas zoom ${lvl}x`}
               >
                 {lvl}x
               </button>
@@ -240,19 +211,21 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
 
           {/* Test Shot Button */}
           <button
+            type="button"
             onClick={triggerRecoilPulse}
-            className="btn-secondary text-xs"
+            className="btn-secondary text-xs flex items-center gap-1.5"
             title="Simulate weapon recoil expansion"
           >
-            <Play size={12} className="fill-current" />
+            <Play size={12} className="fill-current text-[var(--accent)]" />
             <span>Test Shot</span>
           </button>
 
           {/* Re-center Button if offset */}
           {(config.offsetX !== 0 || config.offsetY !== 0) && (
             <button
+              type="button"
               onClick={onRecenter}
-              className="btn-ghost text-xs text-[var(--text-secondary)] hover:text-[var(--accent)]"
+              className="btn-ghost text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] flex items-center gap-1"
               title="Reset offset to exact center (0, 0)"
             >
               <RotateCcw size={12} />

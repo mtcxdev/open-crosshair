@@ -29,8 +29,8 @@ OpenCrosshair v1.1.2 delivers a critical stability fix resolving the blank scree
 
 | Asset File | Type | Size | SHA-256 Checksum | Download |
 | :--- | :--- | :--- | :--- | :--- |
-| `OpenCrosshair Setup 1.1.2.exe` | NSIS Installer | **86.24 MB** (82.24 MiB) | `3865BFCD68D2DC4CE560058F27C507E210E30CD537B746D9BC5040B415CA15D3` | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.Setup.1.1.2.exe) |
-| `OpenCrosshair 1.1.2.exe` | Portable Executable | **86.01 MB** (82.02 MiB) | `D1419E2CFDAE1FEBBC1E290D30A5BBDF0C4EAA06BC99386F93603909C55AE886` | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.1.1.2.exe) |
+| `OpenCrosshair Setup 1.1.2.exe` | NSIS Installer | **86.24 MB** (82.24 MiB) | `7F03F0A7669E17012086286542A32302B5591D99905039D57558F6D15353CF9F` | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.Setup.1.1.2.exe) |
+| `OpenCrosshair 1.1.2.exe` | Portable Executable | **86.01 MB** (82.02 MiB) | `3FBF4171779BB2D92DB288B237DB31A9E251726B94187BAB10F4E58ED53D7195` | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.1.2/OpenCrosshair.1.1.2.exe) |
 
 ### Linux & macOS Deliverables (Automated CI/CD)
 

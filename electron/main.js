@@ -78,11 +78,29 @@ function createMenuWindow() {
     }
   }, 2000);
 
+  // When Studio window is in focus, hide the desktop screen-saver overlay to prevent duplicate crosshairs
+  menuWindow.on('focus', () => {
+    if (overlayWindow && !overlayWindow.isDestroyed() && store.get('settings')?.overlayEnabled !== false) {
+      overlayWindow.hide();
+    }
+  });
+
+  // When user switches to a game, desktop, or another app, restore the active overlay reticle
+  menuWindow.on('blur', () => {
+    if (overlayWindow && !overlayWindow.isDestroyed() && store.get('settings')?.overlayEnabled !== false) {
+      overlayWindow.showInactive();
+    }
+  });
+
   // When closing, minimize to system tray instead of exiting
   menuWindow.on('close', (e) => {
     if (!isQuitting) {
       e.preventDefault();
       menuWindow.hide();
+
+      if (overlayWindow && !overlayWindow.isDestroyed() && store.get('settings')?.overlayEnabled !== false) {
+        overlayWindow.showInactive();
+      }
 
       if (tray && process.platform === 'win32' && !hasShownTrayNotification) {
         tray.displayBalloon({

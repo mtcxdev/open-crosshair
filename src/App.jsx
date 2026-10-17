@@ -336,7 +336,7 @@ export function App() {
               </div>
 
               {/* Right Customization Inspector */}
-              <div className="w-full md:w-80 lg:w-96 h-full overflow-hidden shrink-0">
+              <div className="w-full md:w-80 lg:w-96 h-full overflow-hidden shrink-0 relative z-10 bg-[var(--bg-surface)]">
                 <LayerEditor
                   config={crosshairConfig}
                   onChange={handleConfigChange}

@@ -5,15 +5,15 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Dark Theme (Default) */
-  --bg-base: #0D0E12;
-  --bg-surface: #14161C;
-  --bg-surface-elevated: #1B1E26;
-  --bg-surface-hover: #222631;
-  --bg-surface-active: #2A303D;
+  --bg-base: #0B0D12;
+  --bg-surface: #12141A;
+  --bg-surface-elevated: #181B23;
+  --bg-surface-hover: #1F232D;
+  --bg-surface-active: #272C38;
 
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.24);
   --border-focus: var(--accent);
 
   --text-main: #F3F4F6;
@@ -134,8 +134,9 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Refined Minimalist Scrollbar */

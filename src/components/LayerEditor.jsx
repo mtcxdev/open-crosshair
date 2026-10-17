@@ -4,16 +4,17 @@ import {
   Circle,
   Plus,
   Shield,
-  Sparkles,
   ChevronDown,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Move,
+  Sparkles,
   RotateCw,
-  Palette,
   Maximize2
 } from 'lucide-react';
+import {
+  SliderControl,
+  ToggleSwitch,
+  SegmentedControl,
+  ColorPickerRow
+} from './PrecisionControls';
 
 export function LayerEditor({ config, onChange }) {
   const [activeTab, setActiveTab] = useState('lines'); // 'lines' | 'dot' | 'ring' | 'chevron' | 'transform'
@@ -44,7 +45,7 @@ export function LayerEditor({ config, onChange }) {
   const chevron = config.layers?.chevron || {};
   const shadow = config.shadow || {};
 
-  // Standard esport color swatches
+  // Standard esports high-visibility color swatches
   const colorPresets = [
     '#00FF66', // Tactical Green
     '#00F0FF', // Cyber Cyan
@@ -56,329 +57,175 @@ export function LayerEditor({ config, onChange }) {
     '#7209B7', // Royal Purple
   ];
 
+  const tabOptions = [
+    { id: 'lines', label: 'Arms', icon: Plus, enabled: lines.enabled },
+    { id: 'dot', label: 'Dot', icon: Circle, enabled: dot.enabled },
+    { id: 'ring', label: 'Ring', icon: Shield, enabled: ring.enabled },
+    { id: 'chevron', label: 'Chevron', icon: ChevronDown, enabled: chevron.enabled },
+    { id: 'transform', label: 'Dynamics', icon: Sliders, enabled: true },
+  ];
+
   return (
-    <div className="flex flex-col h-full bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] select-none w-full">
-      {/* Top Layer Segmented Tabs */}
-      <div className="flex items-center gap-1 p-2 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-x-auto shrink-0">
-        <button
-          onClick={() => setActiveTab('lines')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            activeTab === 'lines'
-              ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-          }`}
-        >
-          <Plus size={13} className="stroke-[2.5]" />
-          <span>Arms</span>
-          {lines.enabled && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('dot')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            activeTab === 'dot'
-              ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-          }`}
-        >
-          <Circle size={12} className="stroke-[2.5]" />
-          <span>Dot</span>
-          {dot.enabled && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('ring')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            activeTab === 'ring'
-              ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-          }`}
-        >
-          <Shield size={12} />
-          <span>Ring</span>
-          {ring.enabled && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('chevron')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            activeTab === 'chevron'
-              ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-          }`}
-        >
-          <ChevronDown size={13} className="stroke-[2.5]" />
-          <span>Chevron</span>
-          {chevron.enabled && <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('transform')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            activeTab === 'transform'
-              ? 'bg-[var(--accent-subtle)] text-[var(--accent)] font-semibold'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
-          }`}
-        >
-          <Sliders size={12} />
-          <span>Dynamics</span>
-        </button>
-      </div>
-
-      {/* Main Inspector Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5 text-xs">
-        {/* ===================== TAB 1: ARMS (LINES) ===================== */}
-        {activeTab === 'lines' && (
-          <div className="space-y-4">
-            {/* Layer Master Switch */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <div>
-                <span className="font-semibold text-sm text-[var(--text-main)] block">Crosshair Arms</span>
-                <span className="text-[11px] text-[var(--text-tertiary)]">Four-directional directional reticle</span>
-              </div>
+    <div className="flex flex-col h-full bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] select-none w-full min-w-0 overflow-hidden">
+      {/* Top Segmented Tab Switcher */}
+      <div className="p-2 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] shrink-0">
+        <div className="flex items-center gap-1 bg-[var(--bg-base)] p-1 rounded-xl border border-[var(--border-subtle)]">
+          {tabOptions.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
               <button
-                onClick={() => updateLayer('lines', { enabled: !lines.enabled })}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  lines.enabled
-                    ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-1 rounded-lg text-xs font-medium transition-all ${
+                  isActive
+                    ? 'bg-[var(--bg-surface-elevated)] text-[var(--accent)] font-semibold shadow-sm border border-[var(--border-subtle)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
                 }`}
               >
-                {lines.enabled ? 'Enabled' : 'Disabled'}
+                <Icon size={12} className={isActive ? 'stroke-[2.5]' : ''} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.enabled && tab.id !== 'transform' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 shadow-[0_0_4px_var(--accent)]" />
+                )}
               </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main Inspector Scroll Area with Clean Sections */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-5 text-xs">
+        {/* ===================== TAB 1: ARMS ===================== */}
+        {activeTab === 'lines' && (
+          <div className="space-y-5">
+            {/* Master Enable Row */}
+            <div className="pb-3 border-b border-[var(--border-subtle)]">
+              <ToggleSwitch
+                label="Crosshair Arms"
+                description="Four-directional precision reticle arms"
+                checked={!!lines.enabled}
+                onChange={(checked) => updateLayer('lines', { enabled: checked })}
+              />
             </div>
 
             {lines.enabled && (
               <>
-                {/* Color & Opacity Section */}
-                <div className="space-y-3 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  <div className="flex items-center justify-between text-[11px] font-medium text-[var(--text-secondary)]">
-                    <span>ARM COLOR</span>
-                    <span className="font-mono text-[var(--text-main)]">{lines.color || '#00FF66'}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={lines.color || '#00FF66'}
-                      onChange={(e) => updateLayer('lines', { color: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      className="input-text flex-1 uppercase font-mono text-xs"
-                      value={lines.color || '#00FF66'}
-                      onChange={(e) => updateLayer('lines', { color: e.target.value })}
-                    />
-                  </div>
-
-                  {/* Swatch Quick Selector */}
-                  <div className="flex items-center justify-between gap-1 pt-1">
-                    {colorPresets.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => updateLayer('lines', { color: c })}
-                        className={`w-6 h-6 rounded-md border transition-transform ${
-                          lines.color === c ? 'scale-115 border-white shadow-sm' : 'border-black/20 hover:scale-105'
-                        }`}
-                        style={{ backgroundColor: c }}
-                        title={c}
-                      />
-                    ))}
-                  </div>
+                {/* Arm Color */}
+                <div className="pb-4 border-b border-[var(--border-subtle)]">
+                  <ColorPickerRow
+                    label="ARM COLOR"
+                    color={lines.color || '#00FF66'}
+                    onChange={(c) => updateLayer('lines', { color: c })}
+                    presets={colorPresets}
+                  />
                 </div>
 
-                {/* Geometry Sliders with Numeric Input */}
-                <div className="space-y-4 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  {/* Length */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Length</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="1"
-                          max="32"
-                          value={lines.length || 8}
-                          onChange={(e) => updateLayer('lines', { length: Math.max(1, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="32"
-                      value={lines.length || 8}
-                      onChange={(e) => updateLayer('lines', { length: Number(e.target.value) })}
-                    />
+                {/* Geometry Sliders */}
+                <div className="space-y-4 pb-4 border-b border-[var(--border-subtle)]">
+                  <div className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                    Geometry
                   </div>
 
-                  {/* Thickness */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Thickness</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="1"
-                          max="16"
-                          value={lines.thickness || 2}
-                          onChange={(e) => updateLayer('lines', { thickness: Math.max(1, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="16"
-                      value={lines.thickness || 2}
-                      onChange={(e) => updateLayer('lines', { thickness: Number(e.target.value) })}
-                    />
-                  </div>
+                  <SliderControl
+                    label="Arm Length"
+                    min={1}
+                    max={32}
+                    value={lines.length || 8}
+                    onChange={(v) => updateLayer('lines', { length: v })}
+                  />
 
-                  {/* Center Gap */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Center Gap</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="0"
-                          max="32"
-                          value={lines.gap || 4}
-                          onChange={(e) => updateLayer('lines', { gap: Math.max(0, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="32"
-                      value={lines.gap || 4}
-                      onChange={(e) => updateLayer('lines', { gap: Number(e.target.value) })}
-                    />
-                  </div>
+                  <SliderControl
+                    label="Thickness"
+                    min={1}
+                    max={16}
+                    value={lines.thickness || 2}
+                    onChange={(v) => updateLayer('lines', { thickness: v })}
+                  />
 
-                  {/* Corner Radius */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Corner Rounding</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="0"
-                          max="8"
-                          value={lines.borderRadius || 0}
-                          onChange={(e) => updateLayer('lines', { borderRadius: Math.max(0, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="8"
-                      value={lines.borderRadius || 0}
-                      onChange={(e) => updateLayer('lines', { borderRadius: Number(e.target.value) })}
-                    />
-                  </div>
+                  <SliderControl
+                    label="Center Gap"
+                    min={0}
+                    max={32}
+                    value={lines.gap || 4}
+                    onChange={(v) => updateLayer('lines', { gap: v })}
+                  />
+
+                  <SliderControl
+                    label="Corner Rounding"
+                    min={0}
+                    max={8}
+                    value={lines.borderRadius || 0}
+                    onChange={(v) => updateLayer('lines', { borderRadius: v })}
+                  />
                 </div>
 
                 {/* Outline Controls */}
-                <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-semibold text-xs text-[var(--text-main)] block">Black Outline</span>
-                      <span className="text-[11px] text-[var(--text-tertiary)]">Enhances visibility over bright areas</span>
-                    </div>
-                    <button
-                      onClick={() => updateLayer('lines', { outline: !lines.outline })}
-                      className={`px-2.5 py-0.8 rounded-full text-[11px] font-medium transition-all ${
-                        lines.outline
-                          ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
-                          : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
-                      }`}
-                    >
-                      {lines.outline ? 'On' : 'Off'}
-                    </button>
-                  </div>
+                <div className="space-y-3 pb-4 border-b border-[var(--border-subtle)]">
+                  <ToggleSwitch
+                    label="Dark Outline"
+                    description="High-contrast border for bright background visibility"
+                    checked={!!lines.outline}
+                    onChange={(checked) => updateLayer('lines', { outline: checked })}
+                  />
 
                   {lines.outline && (
-                    <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
-                      <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                        <span>Outline Width</span>
-                        <span className="font-mono text-[var(--text-main)]">{lines.outlineWidth || 1} px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="1"
-                        max="4"
-                        value={lines.outlineWidth || 1}
-                        onChange={(e) => updateLayer('lines', { outlineWidth: Number(e.target.value) })}
-                      />
-                    </div>
+                    <SliderControl
+                      label="Outline Width"
+                      min={1}
+                      max={4}
+                      value={lines.outlineWidth || 1}
+                      onChange={(v) => updateLayer('lines', { outlineWidth: v })}
+                    />
                   )}
                 </div>
 
-                {/* T-Shape & Arm Selectors */}
-                <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-semibold text-xs text-[var(--text-main)] block">T-Shape Mode</span>
-                      <span className="text-[11px] text-[var(--text-tertiary)]">Removes top arm for clear head visibility</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={!!lines.tShape}
-                      onChange={(e) => updateLayer('lines', { tShape: e.target.checked })}
-                      className="w-4 h-4 rounded accent-[var(--accent)] cursor-pointer"
-                    />
-                  </div>
+                {/* T-Shape & Independent Arm Selectors */}
+                <div className="space-y-3">
+                  <ToggleSwitch
+                    label="T-Shape Mode"
+                    description="Removes top arm for unobstructed headshot visibility"
+                    checked={!!lines.tShape}
+                    onChange={(checked) => updateLayer('lines', { tShape: checked })}
+                  />
 
-                  <div className="pt-2 border-t border-[var(--border-subtle)] grid grid-cols-2 gap-2 text-[11px]">
-                    <label className="flex items-center gap-2 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-main)]">
-                      <input
-                        type="checkbox"
-                        checked={lines.left !== false}
-                        onChange={(e) => updateLayer('lines', { left: e.target.checked })}
-                        className="rounded accent-[var(--accent)]"
-                      />
-                      <span>Left Arm</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-main)]">
-                      <input
-                        type="checkbox"
-                        checked={lines.right !== false}
-                        onChange={(e) => updateLayer('lines', { right: e.target.checked })}
-                        className="rounded accent-[var(--accent)]"
-                      />
-                      <span>Right Arm</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-main)]">
-                      <input
-                        type="checkbox"
-                        checked={lines.top !== false && !lines.tShape}
-                        disabled={lines.tShape}
-                        onChange={(e) => updateLayer('lines', { top: e.target.checked })}
-                        className="rounded accent-[var(--accent)] disabled:opacity-30"
-                      />
-                      <span>Top Arm</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-main)]">
-                      <input
-                        type="checkbox"
-                        checked={lines.bottom !== false}
-                        onChange={(e) => updateLayer('lines', { bottom: e.target.checked })}
-                        className="rounded accent-[var(--accent)]"
-                      />
-                      <span>Bottom Arm</span>
-                    </label>
+                  <div className="pt-2">
+                    <span className="text-[11px] font-medium text-[var(--text-secondary)] block mb-2">
+                      Active Arm Directions
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { key: 'top', label: 'Top Arm', disabled: lines.tShape },
+                        { key: 'bottom', label: 'Bottom Arm' },
+                        { key: 'left', label: 'Left Arm' },
+                        { key: 'right', label: 'Right Arm' },
+                      ].map(({ key, label, disabled }) => {
+                        const isActive = lines[key] !== false && (!disabled || key !== 'top');
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            disabled={disabled}
+                            onClick={() => updateLayer('lines', { [key]: !isActive })}
+                            className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                              disabled
+                                ? 'opacity-30 border-[var(--border-subtle)] cursor-not-allowed'
+                                : isActive
+                                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--text-main)] font-semibold'
+                                : 'bg-[var(--bg-base)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)]'
+                            }`}
+                          >
+                            <span>{label}</span>
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                isActive ? 'bg-[var(--accent)] shadow-[0_0_4px_var(--accent)]' : 'bg-neutral-600'
+                              }`}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </>
@@ -388,130 +235,72 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 2: CENTER DOT ===================== */}
         {activeTab === 'dot' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <div>
-                <span className="font-semibold text-sm text-[var(--text-main)] block">Center Dot</span>
-                <span className="text-[11px] text-[var(--text-tertiary)]">Precision focal point for hipfire & tracking</span>
-              </div>
-              <button
-                onClick={() => updateLayer('dot', { enabled: !dot.enabled })}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  dot.enabled
-                    ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
-                }`}
-              >
-                {dot.enabled ? 'Enabled' : 'Disabled'}
-              </button>
+          <div className="space-y-5">
+            <div className="pb-3 border-b border-[var(--border-subtle)]">
+              <ToggleSwitch
+                label="Center Dot"
+                description="Precision focal reticle for hipfire and flick tracking"
+                checked={!!dot.enabled}
+                onChange={(checked) => updateLayer('dot', { enabled: checked })}
+              />
             </div>
 
             {dot.enabled && (
               <>
-                {/* Shape Selector */}
-                <div className="space-y-2 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  <span className="text-[11px] font-medium text-[var(--text-secondary)]">DOT SHAPE</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => updateLayer('dot', { shape: 'circle' })}
-                      className={`py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                        dot.shape !== 'square'
-                          ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent-border)] font-semibold'
-                          : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border-[var(--border-subtle)] hover:text-[var(--text-main)]'
-                      }`}
-                    >
-                      Circular
-                    </button>
-                    <button
-                      onClick={() => updateLayer('dot', { shape: 'square' })}
-                      className={`py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                        dot.shape === 'square'
-                          ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent-border)] font-semibold'
-                          : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border-[var(--border-subtle)] hover:text-[var(--text-main)]'
-                      }`}
-                    >
-                      Square / Pixel
-                    </button>
-                  </div>
+                {/* Dot Shape */}
+                <div className="space-y-2 pb-4 border-b border-[var(--border-subtle)]">
+                  <span className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                    Dot Shape
+                  </span>
+                  <SegmentedControl
+                    value={dot.shape === 'square' ? 'square' : 'circle'}
+                    onChange={(shape) => updateLayer('dot', { shape })}
+                    options={[
+                      { value: 'circle', label: 'Smooth Circle' },
+                      { value: 'square', label: 'Pixel Square' },
+                    ]}
+                  />
                 </div>
 
                 {/* Dot Color */}
-                <div className="space-y-3 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  <div className="flex items-center justify-between text-[11px] font-medium text-[var(--text-secondary)]">
-                    <span>DOT COLOR</span>
-                    <span className="font-mono text-[var(--text-main)]">{dot.color || '#00FF66'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={dot.color || '#00FF66'}
-                      onChange={(e) => updateLayer('dot', { color: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      className="input-text flex-1 uppercase font-mono text-xs"
-                      value={dot.color || '#00FF66'}
-                      onChange={(e) => updateLayer('dot', { color: e.target.value })}
-                    />
-                  </div>
+                <div className="pb-4 border-b border-[var(--border-subtle)]">
+                  <ColorPickerRow
+                    label="DOT COLOR"
+                    color={dot.color || '#00FF66'}
+                    onChange={(c) => updateLayer('dot', { color: c })}
+                    presets={colorPresets}
+                  />
                 </div>
 
-                {/* Dot Radius / Size */}
-                <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-2">
-                  <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Dot Radius</span>
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        min="0.5"
-                        max="10"
-                        step="0.5"
-                        value={dot.size || 2}
-                        onChange={(e) => updateLayer('dot', { size: Math.max(0.5, Number(e.target.value)) })}
-                        className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                      />
-                      <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                    </div>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="10"
-                    step="0.5"
+                {/* Dot Size */}
+                <div className="space-y-4 pb-4 border-b border-[var(--border-subtle)]">
+                  <SliderControl
+                    label="Dot Radius / Size"
+                    min={0.5}
+                    max={10}
+                    step={0.5}
                     value={dot.size || 2}
-                    onChange={(e) => updateLayer('dot', { size: Number(e.target.value) })}
+                    onChange={(v) => updateLayer('dot', { size: v })}
                   />
                 </div>
 
                 {/* Dot Outline */}
-                <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-xs text-[var(--text-main)]">Dot Outline</span>
-                    <button
-                      onClick={() => updateLayer('dot', { outline: !dot.outline })}
-                      className={`px-2.5 py-0.8 rounded-full text-[11px] font-medium transition-all ${
-                        dot.outline
-                          ? 'bg-[var(--accent)] text-[var(--accent-foreground)]'
-                          : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
-                      }`}
-                    >
-                      {dot.outline ? 'On' : 'Off'}
-                    </button>
-                  </div>
+                <div className="space-y-3">
+                  <ToggleSwitch
+                    label="Dot Outline"
+                    description="Black contrast ring around center dot"
+                    checked={!!dot.outline}
+                    onChange={(checked) => updateLayer('dot', { outline: checked })}
+                  />
+
                   {dot.outline && (
-                    <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
-                      <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                        <span>Outline Width</span>
-                        <span className="font-mono text-[var(--text-main)]">{dot.outlineWidth || 1} px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="1"
-                        max="3"
-                        value={dot.outlineWidth || 1}
-                        onChange={(e) => updateLayer('dot', { outlineWidth: Number(e.target.value) })}
-                      />
-                    </div>
+                    <SliderControl
+                      label="Outline Width"
+                      min={1}
+                      max={3}
+                      value={dot.outlineWidth || 1}
+                      onChange={(v) => updateLayer('dot', { outlineWidth: v })}
+                    />
                   )}
                 </div>
               </>
@@ -521,136 +310,69 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 3: RING ===================== */}
         {activeTab === 'ring' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <div>
-                <span className="font-semibold text-sm text-[var(--text-main)] block">Reticle Ring</span>
-                <span className="text-[11px] text-[var(--text-tertiary)]">Circular framing reticle for shotguns & hipfire</span>
-              </div>
-              <button
-                onClick={() => updateLayer('ring', { enabled: !ring.enabled })}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  ring.enabled
-                    ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
-                }`}
-              >
-                {ring.enabled ? 'Enabled' : 'Disabled'}
-              </button>
+          <div className="space-y-5">
+            <div className="pb-3 border-b border-[var(--border-subtle)]">
+              <ToggleSwitch
+                label="Reticle Ring"
+                description="Outer framing circle for shotguns and hipfire tracking"
+                checked={!!ring.enabled}
+                onChange={(checked) => updateLayer('ring', { enabled: checked })}
+              />
             </div>
 
             {ring.enabled && (
               <>
-                <div className="space-y-4 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  {/* Radius */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Radius</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="4"
-                          max="40"
-                          value={ring.radius || 12}
-                          onChange={(e) => updateLayer('ring', { radius: Math.max(4, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="4"
-                      max="40"
-                      value={ring.radius || 12}
-                      onChange={(e) => updateLayer('ring', { radius: Number(e.target.value) })}
-                    />
-                  </div>
-
-                  {/* Thickness */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Thickness</span>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          min="1"
-                          max="8"
-                          value={ring.thickness || 2}
-                          onChange={(e) => updateLayer('ring', { thickness: Math.max(1, Number(e.target.value)) })}
-                          className="w-12 text-right input-text py-0.5 px-1 font-mono text-xs"
-                        />
-                        <span className="text-[10px] text-[var(--text-tertiary)]">px</span>
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="8"
-                      value={ring.thickness || 2}
-                      onChange={(e) => updateLayer('ring', { thickness: Number(e.target.value) })}
-                    />
-                  </div>
-
-                  {/* Color */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <input
-                      type="color"
-                      value={ring.color || '#00FF66'}
-                      onChange={(e) => updateLayer('ring', { color: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      className="input-text flex-1 uppercase font-mono text-xs"
-                      value={ring.color || '#00FF66'}
-                      onChange={(e) => updateLayer('ring', { color: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Dashed Option */}
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                  <div>
-                    <span className="font-semibold text-xs text-[var(--text-main)] block">Dashed Segments</span>
-                    <span className="text-[11px] text-[var(--text-tertiary)]">Segmented tactical circle</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={!!ring.dashed}
-                    onChange={(e) => updateLayer('ring', { dashed: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[var(--accent)] cursor-pointer"
+                <div className="pb-4 border-b border-[var(--border-subtle)]">
+                  <ColorPickerRow
+                    label="RING COLOR"
+                    color={ring.color || '#00FF66'}
+                    onChange={(c) => updateLayer('ring', { color: c })}
+                    presets={colorPresets}
                   />
                 </div>
 
-                {/* Fill Option */}
-                <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-semibold text-xs text-[var(--text-main)] block">Center Fill Tint</span>
-                      <span className="text-[11px] text-[var(--text-tertiary)]">Semi-transparent center highlight</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={!!ring.fill}
-                      onChange={(e) => updateLayer('ring', { fill: e.target.checked })}
-                      className="w-4 h-4 rounded accent-[var(--accent)] cursor-pointer"
-                    />
-                  </div>
+                <div className="space-y-4 pb-4 border-b border-[var(--border-subtle)]">
+                  <SliderControl
+                    label="Ring Radius"
+                    min={4}
+                    max={40}
+                    value={ring.radius || 12}
+                    onChange={(v) => updateLayer('ring', { radius: v })}
+                  />
+
+                  <SliderControl
+                    label="Ring Thickness"
+                    min={1}
+                    max={8}
+                    value={ring.thickness || 2}
+                    onChange={(v) => updateLayer('ring', { thickness: v })}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <ToggleSwitch
+                    label="Dashed Segments"
+                    description="Segmented tactical perimeter ring"
+                    checked={!!ring.dashed}
+                    onChange={(checked) => updateLayer('ring', { dashed: checked })}
+                  />
+
+                  <ToggleSwitch
+                    label="Center Fill Tint"
+                    description="Semi-transparent inner tint"
+                    checked={!!ring.fill}
+                    onChange={(checked) => updateLayer('ring', { fill: checked })}
+                  />
+
                   {ring.fill && (
-                    <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
-                      <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                        <span>Fill Opacity</span>
-                        <span className="font-mono text-[var(--text-main)]">{Math.round((ring.fillOpacity || 0.2) * 100)}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0.05"
-                        max="1"
-                        step="0.05"
-                        value={ring.fillOpacity || 0.2}
-                        onChange={(e) => updateLayer('ring', { fillOpacity: Number(e.target.value) })}
-                      />
-                    </div>
+                    <SliderControl
+                      label="Fill Opacity"
+                      min={5}
+                      max={100}
+                      unit="%"
+                      value={Math.round((ring.fillOpacity || 0.2) * 100)}
+                      onChange={(v) => updateLayer('ring', { fillOpacity: v / 100 })}
+                    />
                   )}
                 </div>
               </>
@@ -660,79 +382,48 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 4: CHEVRON ===================== */}
         {activeTab === 'chevron' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <div>
-                <span className="font-semibold text-sm text-[var(--text-main)] block">Tactical Chevron</span>
-                <span className="text-[11px] text-[var(--text-tertiary)]">Angled optic chevron arrow indicator</span>
-              </div>
-              <button
-                onClick={() => updateLayer('chevron', { enabled: !chevron.enabled })}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  chevron.enabled
-                    ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
-                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
-                }`}
-              >
-                {chevron.enabled ? 'Enabled' : 'Disabled'}
-              </button>
+          <div className="space-y-5">
+            <div className="pb-3 border-b border-[var(--border-subtle)]">
+              <ToggleSwitch
+                label="Tactical Chevron"
+                description="Angled optic chevron arrow indicator"
+                checked={!!chevron.enabled}
+                onChange={(checked) => updateLayer('chevron', { enabled: checked })}
+              />
             </div>
 
             {chevron.enabled && (
-              <div className="space-y-4 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-                {/* Size */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Chevron Size</span>
-                    <span className="font-mono text-[var(--text-main)]">{chevron.size || 8} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="3"
-                    max="20"
-                    value={chevron.size || 8}
-                    onChange={(e) => updateLayer('chevron', { size: Number(e.target.value) })}
-                  />
-                </div>
+              <div className="space-y-4">
+                <SliderControl
+                  label="Chevron Size"
+                  min={3}
+                  max={20}
+                  value={chevron.size || 8}
+                  onChange={(v) => updateLayer('chevron', { size: v })}
+                />
 
-                {/* Thickness */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Thickness</span>
-                    <span className="font-mono text-[var(--text-main)]">{chevron.thickness || 2} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="6"
-                    value={chevron.thickness || 2}
-                    onChange={(e) => updateLayer('chevron', { thickness: Number(e.target.value) })}
-                  />
-                </div>
+                <SliderControl
+                  label="Thickness"
+                  min={1}
+                  max={6}
+                  value={chevron.thickness || 2}
+                  onChange={(v) => updateLayer('chevron', { thickness: v })}
+                />
 
-                {/* Vertical Offset */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Vertical Shift</span>
-                    <span className="font-mono text-[var(--text-main)]">{chevron.offsetY || 0} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="-20"
-                    max="20"
-                    value={chevron.offsetY || 0}
-                    onChange={(e) => updateLayer('chevron', { offsetY: Number(e.target.value) })}
-                  />
-                </div>
+                <SliderControl
+                  label="Vertical Shift"
+                  min={-20}
+                  max={20}
+                  value={chevron.offsetY || 0}
+                  onChange={(v) => updateLayer('chevron', { offsetY: v })}
+                />
 
-                {/* Invert */}
-                <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
-                  <span className="text-xs text-[var(--text-secondary)]">Invert to V-Shape</span>
-                  <input
-                    type="checkbox"
+                <div className="pt-2">
+                  <ToggleSwitch
+                    label="Invert to V-Shape"
+                    description="Flip chevron orientation downwards"
                     checked={!!chevron.inverted}
-                    onChange={(e) => updateLayer('chevron', { inverted: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[var(--accent)] cursor-pointer"
+                    onChange={(checked) => updateLayer('chevron', { inverted: checked })}
                   />
                 </div>
               </div>
@@ -742,93 +433,65 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 5: DYNAMICS & TRANSFORM ===================== */}
         {activeTab === 'transform' && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Global Scale & Rotation */}
-            <div className="space-y-4 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <span className="text-[11px] font-semibold text-[var(--text-secondary)] block">SCALE & ROTATION</span>
-
-              {/* Global Scale */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                  <span>Global Size Scale</span>
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0.5"
-                      max="3.0"
-                      step="0.05"
-                      value={config.scale || 1.0}
-                      onChange={(e) => updateRoot('scale', Math.max(0.2, Number(e.target.value)))}
-                      className="w-14 text-right input-text py-0.5 px-1 font-mono text-xs"
-                    />
-                    <span className="text-[10px] text-[var(--text-tertiary)]">x</span>
-                  </div>
-                </div>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="3.0"
-                  step="0.05"
-                  value={config.scale || 1.0}
-                  onChange={(e) => updateRoot('scale', Number(e.target.value))}
-                />
+            <div className="space-y-4 pb-4 border-b border-[var(--border-subtle)]">
+              <div className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                Scale & Orientation
               </div>
 
-              {/* Rotation Angle */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                  <span>Rotation Angle</span>
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="360"
-                      value={config.rotation || 0}
-                      onChange={(e) => updateRoot('rotation', (Number(e.target.value) % 360 + 360) % 360)}
-                      className="w-14 text-right input-text py-0.5 px-1 font-mono text-xs"
-                    />
-                    <span className="text-[10px] text-[var(--text-tertiary)]">&deg;</span>
-                  </div>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="360"
-                  step="5"
-                  value={config.rotation || 0}
-                  onChange={(e) => updateRoot('rotation', Number(e.target.value))}
-                />
-              </div>
+              <SliderControl
+                label="Global Scale"
+                min={0.5}
+                max={3.0}
+                step={0.05}
+                unit="x"
+                value={config.scale || 1.0}
+                onChange={(v) => updateRoot('scale', v)}
+              />
+
+              <SliderControl
+                label="Rotation Angle"
+                min={0}
+                max={360}
+                step={5}
+                unit="°"
+                value={config.rotation || 0}
+                onChange={(v) => updateRoot('rotation', v)}
+              />
             </div>
 
             {/* Firing Bloom & Recoil Dynamics */}
-            <div className="space-y-2 p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]">
-              <span className="text-[11px] font-semibold text-[var(--text-secondary)] block">RECOIL DYNAMICS</span>
-              <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                <span>Bloom Expansion Multiplier</span>
-                <span className="font-mono text-[var(--accent)] font-semibold">{(config.recoilMultiplier || 1.0).toFixed(1)}x</span>
+            <div className="space-y-3 pb-4 border-b border-[var(--border-subtle)]">
+              <div className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                Dynamic Recoil & Bloom
               </div>
-              <input
-                type="range"
-                min="0"
-                max="3.0"
-                step="0.1"
+
+              <SliderControl
+                label="Bloom Multiplier"
+                min={0}
+                max={3.0}
+                step={0.1}
+                unit="x"
                 value={config.recoilMultiplier || 1.0}
-                onChange={(e) => updateRoot('recoilMultiplier', Number(e.target.value))}
+                onChange={(v) => updateRoot('recoilMultiplier', v)}
               />
               <span className="text-[11px] text-[var(--text-tertiary)] block">
-                Controls how far crosshair arms expand outwards during rapid weapon fire.
+                Crosshair arms dynamically expand outward during rapid weapon fire or movement.
               </span>
             </div>
 
             {/* Subpixel Centering Nudge */}
-            <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
+            <div className="space-y-3 pb-4 border-b border-[var(--border-subtle)]">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-[var(--text-secondary)]">CENTER CALIBRATION</span>
+                <span className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
+                  Center Calibration
+                </span>
                 {(config.offsetX !== 0 || config.offsetY !== 0) && (
                   <button
+                    type="button"
                     onClick={() => onChange({ ...config, offsetX: 0, offsetY: 0 })}
-                    className="text-[11px] text-[var(--accent)] hover:underline"
+                    className="text-[11px] text-[var(--accent)] hover:underline font-medium"
                   >
                     Reset (0, 0)
                   </button>
@@ -836,63 +499,40 @@ export function LayerEditor({ config, onChange }) {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-[var(--text-secondary)]">
-                    <span>X Offset</span>
-                    <span className="font-mono text-[var(--text-main)]">{config.offsetX || 0} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="-40"
-                    max="40"
-                    value={config.offsetX || 0}
-                    onChange={(e) => updateRoot('offsetX', Number(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Y Offset</span>
-                    <span className="font-mono text-[var(--text-main)]">{config.offsetY || 0} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="-40"
-                    max="40"
-                    value={config.offsetY || 0}
-                    onChange={(e) => updateRoot('offsetY', Number(e.target.value))}
-                  />
-                </div>
+                <SliderControl
+                  label="X Shift"
+                  min={-40}
+                  max={40}
+                  value={config.offsetX || 0}
+                  onChange={(v) => updateRoot('offsetX', v)}
+                />
+                <SliderControl
+                  label="Y Shift"
+                  min={-40}
+                  max={40}
+                  value={config.offsetY || 0}
+                  onChange={(v) => updateRoot('offsetY', v)}
+                />
               </div>
             </div>
 
-            {/* Drop Shadow & Glow */}
-            <div className="p-3.5 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-xs text-[var(--text-main)] block">Glow & Shadow</span>
-                  <span className="text-[11px] text-[var(--text-tertiary)]">Adds soft outer ambient contrast</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={!!shadow.enabled}
-                  onChange={(e) => updateRoot('shadow', { ...shadow, enabled: e.target.checked })}
-                  className="w-4 h-4 rounded accent-[var(--accent)] cursor-pointer"
-                />
-              </div>
+            {/* Outer Glow & Shadow */}
+            <div className="space-y-3">
+              <ToggleSwitch
+                label="Glow & Shadow"
+                description="Ambient drop shadow for maximum clarity against complex game textures"
+                checked={!!shadow.enabled}
+                onChange={(checked) => updateRoot('shadow', { ...shadow, enabled: checked })}
+              />
+
               {shadow.enabled && (
-                <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
-                  <div className="flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                    <span>Blur Radius</span>
-                    <span className="font-mono text-[var(--text-main)]">{shadow.blur || 2} px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={shadow.blur || 2}
-                    onChange={(e) => updateRoot('shadow', { ...shadow, blur: Number(e.target.value) })}
-                  />
-                </div>
+                <SliderControl
+                  label="Blur Radius"
+                  min={1}
+                  max={10}
+                  value={shadow.blur || 2}
+                  onChange={(v) => updateRoot('shadow', { ...shadow, blur: v })}
+                />
               )}
             </div>
           </div>
