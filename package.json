@@ -1,7 +1,7 @@
 {
   "name": "open-crosshair",
-  "version": "1.1.2",
-  "description": "An open-source, 100% offline, local-first precision crosshair overlay and vector studio with modern customizable UI.",
+  "version": "1.2.0",
+  "description": "A polished, offline-first precision crosshair overlay and vector studio.",
   "main": "electron/main.js",
   "repository": {
     "type": "git",
@@ -23,8 +23,10 @@
     "gaming",
     "esports",
     "open-source",
-    "brutalist",
-    "obs-studio"
+    "obs-studio",
+    "precision",
+    "desktop-app",
+    "customization"
   ],
   "author": "MTCX DEV <mtcx999@gmail.com>",
   "license": "MIT",
@@ -47,7 +49,9 @@
     "appId": "com.opencrosshair.app",
     "productName": "OpenCrosshair",
     "compression": "maximum",
-    "electronLanguages": ["en-US"],
+    "electronLanguages": [
+      "en-US"
+    ],
     "afterPack": "scripts/afterPack.js",
     "directories": {
       "output": "release"
@@ -63,11 +67,15 @@
       "target": [
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -79,11 +87,18 @@
       "differentialPackage": false
     },
     "linux": {
-      "target": ["AppImage", "deb", "tar.gz"],
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ],
       "category": "Game"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.games",
       "identity": null
     }
