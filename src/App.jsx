@@ -13,13 +13,11 @@ import {
   Eye,
   EyeOff,
   SlidersHorizontal,
-  Activity,
-  Command,
-  Sparkles,
   Minus,
   Square,
   X,
   Minimize2,
+  Sliders,
 } from 'lucide-react';
 import { CrosshairPreview } from './components/CrosshairPreview';
 import { LayerEditor } from './components/LayerEditor';
@@ -33,10 +31,10 @@ import { DEFAULT_PRESETS } from './constants/defaultPresets';
 import { generateCrosshairSVG } from './utils/svgGenerator';
 
 const NAV = [
-  { id: 'studio', label: 'Crosshair studio', short: 'STUDIO', hint: 'Build & tune', icon: Crosshair },
-  { id: 'presets', label: 'Preset library', short: 'LIBRARY', hint: 'Find your look', icon: LayoutGrid },
-  { id: 'games', label: 'Game profiles', short: 'PROFILES', hint: 'Auto-switch', icon: Gamepad2 },
-  { id: 'overlay', label: 'Overlay & stream', short: 'OVERLAY', hint: 'Displays & OBS', icon: Monitor },
+  { id: 'studio', label: 'Crosshair Studio', hint: 'Design & adjust', icon: Crosshair },
+  { id: 'presets', label: 'Preset Library', hint: 'Browse crosshairs', icon: LayoutGrid },
+  { id: 'games', label: 'Game Profiles', hint: 'Auto-switch per game', icon: Gamepad2 },
+  { id: 'overlay', label: 'Overlay & OBS', hint: 'Screen & streaming', icon: Monitor },
 ];
 
 export function App() {
@@ -54,7 +52,10 @@ export function App() {
   const [toast, setToast] = useState(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('och_theme') || 'dark');
   const [accent, setAccent] = useState(() => localStorage.getItem('och_accent') || 'emerald');
-  const [fontSize, setFontSize] = useState(() => localStorage.getItem('och_fontSize') || 'md');
+  const [uiScale, setUiScale] = useState(() => {
+    const saved = localStorage.getItem('och_ui_scale');
+    return saved ? Number(saved) : 100;
+  });
   const [isMaximized, setIsMaximized] = useState(false);
 
   const historyRef = useRef([DEFAULT_PRESETS[0]]);
@@ -79,11 +80,13 @@ export function App() {
           : 'light'
         : theme
     );
-    document.documentElement.setAttribute('data-font-size', fontSize);
+    const scaleVal = (uiScale || 100) / 100;
+    document.documentElement.style.setProperty('--ui-scale', String(scaleVal));
+    document.documentElement.style.fontSize = `${14.5 * scaleVal}px`;
     localStorage.setItem('och_accent', accent);
     localStorage.setItem('och_theme', theme);
-    localStorage.setItem('och_fontSize', fontSize);
-  }, [theme, accent, fontSize]);
+    localStorage.setItem('och_ui_scale', String(uiScale));
+  }, [theme, accent, uiScale]);
 
   useEffect(() => {
     if (theme !== 'system') return;
@@ -109,7 +112,7 @@ export function App() {
         setSelectedDisplayId(data.settings.selectedDisplayId);
         if (data.settings.theme) setTheme(data.settings.theme);
         if (data.settings.accent) setAccent(data.settings.accent);
-        if (data.settings.fontSize) setFontSize(data.settings.fontSize);
+        if (data.settings.uiScale) setUiScale(data.settings.uiScale);
       }
     });
 
@@ -132,7 +135,7 @@ export function App() {
     window.api.onOverlayStateChanged(setOverlayEnabled);
     window.api.onCrosshairRecentered((next) => {
       setCrosshairConfig(next);
-      showToast({ message: 'Crosshair recentered', type: 'info' });
+      showToast({ message: 'Crosshair centered', type: 'info' });
     });
     window.api.getStreamerInfo?.().then((info) => {
       if (info) setStreamerInfo(info);
@@ -212,14 +215,14 @@ export function App() {
       window.api.toggleOverlay().then((next) => {
         setOverlayEnabled(next);
         showToast({
-          message: `Overlay ${next ? 'enabled' : 'paused'}`,
+          message: `Overlay ${next ? 'enabled' : 'disabled'}`,
           type: next ? 'success' : 'info',
         });
       });
     } else {
       const next = !overlayEnabled;
       setOverlayEnabled(next);
-      showToast({ message: `Overlay ${next ? 'enabled' : 'paused'}`, type: 'info' });
+      showToast({ message: `Overlay ${next ? 'enabled' : 'disabled'}`, type: 'info' });
     }
   };
 
@@ -246,13 +249,13 @@ export function App() {
 
   const handleRecenter = () => {
     handleConfigChange({ ...crosshairConfig, offsetX: 0, offsetY: 0 });
-    showToast({ message: 'Crosshair centered', type: 'success' });
+    showToast({ message: 'Crosshair centered to (0, 0)', type: 'success' });
   };
 
   const handleResetDefaults = () => {
     handleConfigChange(DEFAULT_PRESETS[0]);
     setSettingsOpen(false);
-    showToast({ message: 'Factory defaults restored', type: 'info' });
+    showToast({ message: 'Default reticle restored', type: 'info' });
   };
 
   const handleChangeStreamerPort = async (port) => {
@@ -276,12 +279,10 @@ export function App() {
   };
 
   const currentNav = NAV.find((item) => item.id === activeNav) || NAV[0];
-  const selectedDisplay =
-    displays.find((item) => item.id === selectedDisplayId) ||
-    displays.find((item) => item.isPrimary);
 
   return (
     <div className="app-shell">
+      {/* Top Titlebar */}
       <header className="app-topbar" style={{ WebkitAppRegion: 'drag' }}>
         <div className="brand-lockup">
           <div className="brand-mark">
@@ -291,21 +292,8 @@ export function App() {
             <span className="brand-name">
               open<span>crosshair</span>
             </span>
-            <span className="brand-caption">
-              PRECISION WORKSPACE <i />
-            </span>
           </div>
-          <span className="version-chip">v1.4</span>
-        </div>
-
-        <div className="topbar-center" style={{ WebkitAppRegion: 'no-drag' }}>
-          <span className="workspace-crumb">
-            WORKSPACE <b>/</b> {currentNav.short}
-          </span>
-          <span className="topbar-divider" />
-          <span className="local-status">
-            <i /> LOCAL ENGINE
-          </span>
+          <span className="version-chip">v1.4.1</span>
         </div>
 
         <div className="topbar-actions" style={{ WebkitAppRegion: 'no-drag' }}>
@@ -313,7 +301,7 @@ export function App() {
             className="icon-button"
             onClick={handleUndo}
             disabled={!canUndo}
-            title="Undo · Ctrl Z"
+            title="Undo (Ctrl + Z)"
           >
             <Undo2 size={16} />
           </button>
@@ -321,18 +309,20 @@ export function App() {
             className="icon-button"
             onClick={handleRedo}
             disabled={!canRedo}
-            title="Redo · Ctrl Y"
+            title="Redo (Ctrl + Y)"
           >
             <Redo2 size={16} />
           </button>
+
           <span className="topbar-divider" />
+
           <button
             className={`overlay-pill ${overlayEnabled ? 'is-live' : ''}`}
             onClick={handleToggleOverlay}
-            title="Toggle overlay reticle"
+            title="Toggle overlay reticle on screen"
           >
             <span className="status-dot" />
-            {overlayEnabled ? 'Overlay live' : 'Overlay paused'}
+            <span>{overlayEnabled ? 'Overlay Active' : 'Overlay Hidden'}</span>
             {overlayEnabled ? <Eye size={14} /> : <EyeOff size={14} />}
           </button>
 
@@ -341,21 +331,21 @@ export function App() {
             <button
               className="win-btn win-minimize"
               onClick={handleMinimize}
-              title="Minimize to Taskbar"
+              title="Minimize"
             >
               <Minus size={14} />
             </button>
             <button
               className="win-btn win-maximize"
               onClick={handleMaximize}
-              title={isMaximized ? 'Restore Window' : 'Maximize Window'}
+              title={isMaximized ? 'Restore' : 'Maximize'}
             >
               {isMaximized ? <Minimize2 size={12} /> : <Square size={11} />}
             </button>
             <button
               className="win-btn win-close"
               onClick={handleClose}
-              title="Close to System Tray"
+              title="Close to Tray"
             >
               <X size={15} />
             </button>
@@ -364,10 +354,10 @@ export function App() {
       </header>
 
       <div className="app-body">
+        {/* Sidebar Navigation */}
         <aside className="app-sidebar">
-          <div className="sidebar-label">WORKSPACE</div>
           <nav className="nav-stack">
-            {NAV.map((item, index) => {
+            {NAV.map((item) => {
               const Icon = item.icon;
               const active = activeNav === item.id;
               return (
@@ -377,14 +367,13 @@ export function App() {
                   onClick={() => setActiveNav(item.id)}
                 >
                   <span className="nav-icon">
-                    <Icon size={18} strokeWidth={active ? 2.3 : 1.8} />
+                    <Icon size={18} strokeWidth={active ? 2.4 : 1.8} />
                   </span>
                   <span className="nav-text">
                     <b>{item.label}</b>
                     <small>{item.hint}</small>
                   </span>
                   {active && <span className="nav-active-mark" />}
-                  <span className="nav-index">0{index + 1}</span>
                 </button>
               );
             })}
@@ -392,34 +381,54 @@ export function App() {
 
           <div className="sidebar-spacer" />
 
-          <div className="sidebar-card">
-            <div className="sidebar-card-orbit">
-              <Crosshair size={22} />
-            </div>
-            <span className="sidebar-card-kicker">AIM WITH INTENT</span>
-            <p>Make every pixel count.</p>
-            <button onClick={() => setDonationOpen(true)}>
-              <Heart size={13} /> Support project
-            </button>
-          </div>
-
+          {/* Sidebar Utilities & Quick Controls */}
           <div className="sidebar-bottom">
             <button
               className="sidebar-utility"
               onClick={() => setTheme((value) => (value === 'dark' ? 'light' : 'dark'))}
+              title="Toggle Dark / Light Theme"
             >
               <span className="utility-icon">
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
               </span>
-              <span>Appearance</span>
-              <span className="utility-value">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+              <span>Theme</span>
+              <span className="utility-value capitalize">{theme}</span>
             </button>
-            <button className="sidebar-utility" onClick={() => setSettingsOpen(true)}>
+
+            <button
+              className="sidebar-utility"
+              onClick={() => setSettingsOpen(true)}
+              title="Adjust UI scale and font size"
+            >
+              <span className="utility-icon">
+                <Sliders size={16} />
+              </span>
+              <span>UI Scale</span>
+              <span className="utility-value font-mono font-bold text-[var(--accent)]">{uiScale}%</span>
+            </button>
+
+            <button
+              className="sidebar-utility"
+              onClick={() => setSettingsOpen(true)}
+              title="Application Settings"
+            >
               <span className="utility-icon">
                 <Settings2 size={16} />
               </span>
-              <span>Preferences</span>
+              <span>Settings</span>
               <span className="utility-shortcut">↗</span>
+            </button>
+
+            <button
+              className="sidebar-utility text-rose-400 hover:text-rose-300"
+              onClick={() => setDonationOpen(true)}
+              title="Support OpenCrosshair"
+            >
+              <span className="utility-icon text-rose-400">
+                <Heart size={16} className="fill-rose-500/20" />
+              </span>
+              <span>Donate</span>
+              <span className="utility-shortcut">♥</span>
             </button>
           </div>
 
@@ -427,164 +436,129 @@ export function App() {
             <span className="footer-avatar">OC</span>
             <div>
               <b>OpenCrosshair</b>
-              <small>Offline by design</small>
+              <small>Offline & Safe</small>
             </div>
-            <span className="footer-live" />
           </div>
         </aside>
 
+        {/* Main Workspace */}
         <main className="app-main">
-          <div className="page-heading">
-            <div>
-              <div className="eyebrow">
-                <span className="eyebrow-line" /> YOUR PERSONAL AIM LAB
-              </div>
-              <h1>
-                {currentNav.label}
-                <span className="heading-period">.</span>
-              </h1>
-              <p>
-                {activeNav === 'studio'
-                  ? 'Shape your perfect reticle. See every adjustment in real time.'
-                  : activeNav === 'presets'
-                  ? 'A curated starting point for your next perfect setup.'
-                  : activeNav === 'games'
-                  ? 'Give every game its own feel, automatically.'
-                  : 'Your display overlay and broadcast tools, in one place.'}
-              </p>
-            </div>
-            <div className="heading-meta">
-              <div className="meta-tile">
-                <span className="meta-icon">
-                  <Crosshair size={15} />
-                </span>
-                <div>
-                  <small>ACTIVE DESIGN</small>
-                  <b>{crosshairConfig.name || 'Custom reticle'}</b>
-                </div>
-              </div>
-              <div className="meta-tile">
-                <span className="meta-icon">
-                  <LayoutGrid size={15} />
-                </span>
-                <div>
-                  <small>SAVED DESIGNS</small>
-                  <b>
-                    {String(savedCrosshairs.length).padStart(2, '0')} <em>in library</em>
-                  </b>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {activeNav === 'studio' && (
-            <section className="studio-layout">
-              <div className="studio-preview-column">
-                <div className="section-overline">
-                  <span>01</span> LIVE CANVAS <span className="section-overline-rule" />
-                  <span className="live-preview">
-                    <i /> REAL-TIME PREVIEW
+          {activeNav === 'studio' ? (
+            <div className="studio-container">
+              {/* Sleek Compact Header */}
+              <div className="studio-topbar">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider">RETICLE:</span>
+                    <span className="text-sm font-bold text-[var(--text-main)]">
+                      {crosshairConfig.name || 'Custom Crosshair'}
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent)]">
+                    {Number(crosshairConfig.scale || 1).toFixed(1)}× Scale
                   </span>
                 </div>
-                <div className="preview-frame">
-                  <CrosshairPreview
-                    config={crosshairConfig}
-                    onTriggerRecoil={(amount) => window.api?.triggerRecoil(amount)}
-                    onRecenter={handleRecenter}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleRecenter}
+                    className="btn-secondary text-xs py-1.5 px-3"
+                    title="Center crosshair position to (0, 0)"
+                  >
+                    Center Reticle
+                  </button>
+                </div>
+              </div>
+
+              {/* Studio Grid: Canvas on Left, Controls on Right */}
+              <section className="studio-layout">
+                <div className="studio-preview-column">
+                  <div className="preview-frame">
+                    <CrosshairPreview
+                      config={crosshairConfig}
+                      onTriggerRecoil={(amount) => window.api?.triggerRecoil(amount)}
+                      onRecenter={handleRecenter}
+                    />
+                  </div>
+                  <div className="canvas-footer">
+                    <div className="canvas-tip">
+                      <span className="tip-key">LMB</span> Test Recoil <span className="tip-separator">/</span>{' '}
+                      <span className="tip-key">RMB</span> Test ADS
+                    </div>
+                    <div className="canvas-readout">
+                      <span>OFFSET:</span>
+                      <b>
+                        {crosshairConfig.offsetX || 0}, {crosshairConfig.offsetY || 0}
+                      </b>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="studio-inspector">
+                  <div className="inspector-inner">
+                    <LayerEditor config={crosshairConfig} onChange={handleConfigChange} />
+                  </div>
+                </div>
+              </section>
+            </div>
+          ) : (
+            <div className="subpage-container">
+              <div className="subpage-header">
+                <h1 className="text-lg font-bold text-[var(--text-main)]">{currentNav.label}</h1>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  {activeNav === 'presets'
+                    ? 'Browse, apply, or import community and esports crosshairs.'
+                    : activeNav === 'games'
+                    ? 'Auto-switch crosshairs automatically when specific games launch.'
+                    : 'Configure monitor displays and OBS streaming overlay.'}
+                </p>
+              </div>
+
+              {activeNav === 'presets' && (
+                <section className="subpage-panel">
+                  <Presets
+                    currentConfig={crosshairConfig}
+                    onSelectPreset={(preset) => {
+                      handleConfigChange(preset);
+                      setActiveNav('studio');
+                      showToast({ message: `Applied "${preset.name}"`, type: 'success' });
+                    }}
+                    savedCrosshairs={savedCrosshairs}
+                    onSaveCurrent={handleSaveCurrent}
+                    onDeleteSaved={handleDeleteSaved}
+                    onShowToast={showToast}
                   />
-                </div>
-                <div className="canvas-footer">
-                  <div className="canvas-tip">
-                    <span className="tip-key">LMB</span> Test recoil{' '}
-                    <span className="tip-separator">/</span>{' '}
-                    <span className="tip-key">RMB</span> Toggle ADS
-                  </div>
-                  <div className="canvas-readout">
-                    <span>OFFSET</span>
-                    <b>
-                      {crosshairConfig.offsetX || 0}, {crosshairConfig.offsetY || 0}
-                    </b>
-                    <span className="readout-divider" />
-                    <span>SCALE</span>
-                    <b>{Number(crosshairConfig.scale || 1).toFixed(1)}×</b>
-                  </div>
-                </div>
-              </div>
-              <div className="studio-inspector">
-                <div className="section-overline">
-                  <span>02</span> DESIGN CONTROLS <span className="section-overline-rule" />
-                  <SlidersHorizontal size={14} />
-                </div>
-                <div className="inspector-inner">
-                  <LayerEditor config={crosshairConfig} onChange={handleConfigChange} />
-                </div>
-              </div>
-            </section>
-          )}
-
-          {activeNav === 'presets' && (
-            <section className="subpage-panel">
-              <Presets
-                currentConfig={crosshairConfig}
-                onSelectPreset={(preset) => {
-                  handleConfigChange(preset);
-                  setActiveNav('studio');
-                  showToast({ message: `Applied preset “${preset.name}”`, type: 'success' });
-                }}
-                savedCrosshairs={savedCrosshairs}
-                onSaveCurrent={handleSaveCurrent}
-                onDeleteSaved={handleDeleteSaved}
-                onShowToast={showToast}
-              />
-            </section>
-          )}
-
-          {activeNav === 'games' && (
-            <section className="subpage-panel">
-              <GameProfiles
-                profiles={gameProfiles}
-                onSaveProfiles={handleSaveGameProfiles}
-                savedCrosshairs={savedCrosshairs}
-                activeProfile={activeFocusedProfile}
-                onShowToast={showToast}
-              />
-            </section>
-          )}
-
-          {activeNav === 'overlay' && (
-            <section className="subpage-panel">
-              <OverlayHub
-                overlayEnabled={overlayEnabled}
-                onToggleOverlay={handleToggleOverlay}
-                displays={displays}
-                selectedDisplayId={selectedDisplayId}
-                onSelectDisplay={handleSelectDisplay}
-                streamerInfo={streamerInfo}
-                onChangeStreamerPort={handleChangeStreamerPort}
-                onShowToast={showToast}
-              />
-            </section>
-          )}
-
-          <footer className="workspace-footer">
-            <span>
-              <Activity size={13} /> ALL CHANGES SYNC LIVE
-            </span>
-            <span className="workspace-footer-right">
-              {selectedDisplay ? (
-                <>
-                  <Monitor size={13} />{' '}
-                  {selectedDisplay.label || selectedDisplay.name || `Display ${selectedDisplay.id}`}
-                </>
-              ) : (
-                <>
-                  <Sparkles size={13} /> Ready when you are
-                </>
+                </section>
               )}
-              <span className="footer-divider" />
-              <Command size={12} /> Z / Y
-            </span>
-          </footer>
+
+              {activeNav === 'games' && (
+                <section className="subpage-panel">
+                  <GameProfiles
+                    profiles={gameProfiles}
+                    onSaveProfiles={handleSaveGameProfiles}
+                    savedCrosshairs={savedCrosshairs}
+                    activeProfile={activeFocusedProfile}
+                    onShowToast={showToast}
+                  />
+                </section>
+              )}
+
+              {activeNav === 'overlay' && (
+                <section className="subpage-panel">
+                  <OverlayHub
+                    overlayEnabled={overlayEnabled}
+                    onToggleOverlay={handleToggleOverlay}
+                    displays={displays}
+                    selectedDisplayId={selectedDisplayId}
+                    onSelectDisplay={handleSelectDisplay}
+                    streamerInfo={streamerInfo}
+                    onChangeStreamerPort={handleChangeStreamerPort}
+                    onShowToast={showToast}
+                  />
+                </section>
+              )}
+            </div>
+          )}
         </main>
       </div>
 
@@ -597,15 +571,15 @@ export function App() {
         onChangeTheme={setTheme}
         accent={accent}
         onChangeAccent={setAccent}
-        fontSize={fontSize}
-        onChangeFontSize={setFontSize}
+        uiScale={uiScale}
+        onChangeUiScale={setUiScale}
         allData={{
           activeCrosshair: crosshairConfig,
           savedCrosshairs,
           gameProfiles,
           theme,
           accent,
-          fontSize,
+          uiScale,
         }}
         onImportBackup={(backup) => {
           if (backup.activeCrosshair) handleConfigChange(backup.activeCrosshair);
@@ -613,7 +587,7 @@ export function App() {
           if (backup.gameProfiles) setGameProfiles(backup.gameProfiles);
           if (backup.theme) setTheme(backup.theme);
           if (backup.accent) setAccent(backup.accent);
-          if (backup.fontSize) setFontSize(backup.fontSize);
+          if (backup.uiScale) setUiScale(backup.uiScale);
           window.api?.saveStore?.(backup);
         }}
         onShowToast={showToast}
