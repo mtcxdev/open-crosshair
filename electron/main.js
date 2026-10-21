@@ -46,6 +46,18 @@ function createMenuWindow() {
     },
   });
 
+  menuWindow.on('maximize', () => {
+    if (menuWindow && !menuWindow.isDestroyed()) {
+      menuWindow.webContents.send('window-maximize-changed', true);
+    }
+  });
+
+  menuWindow.on('unmaximize', () => {
+    if (menuWindow && !menuWindow.isDestroyed()) {
+      menuWindow.webContents.send('window-maximize-changed', false);
+    }
+  });
+
   menuWindow.webContents.on('console-message', (_e, level, message, line, sourceId) => {
     console.log(`[Renderer Console] [lvl ${level}] ${message} (${sourceId}:${line})`);
   });
@@ -404,6 +416,10 @@ function setupIPC() {
     }
   });
 
+  ipcMain.handle('is-window-maximized', () => {
+    return menuWindow ? menuWindow.isMaximized() : false;
+  });
+
   // Close hides to system tray!
   ipcMain.on('window-close', () => {
     if (menuWindow) menuWindow.close();
@@ -461,6 +477,10 @@ function onGameDetected(matchedProfile) {
 }
 
 app.whenReady().then(() => {
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.opencrosshair.app');
+  }
+
   setupIPC();
 
   // Start OBS streamer server with dynamic multi-port fallback

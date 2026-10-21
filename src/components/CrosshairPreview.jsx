@@ -62,16 +62,16 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
   const getBgClass = () => {
     switch (bgMode) {
       case 'dark':
-        return 'bg-[#0A0B0E]';
+        return 'bg-[#0A0B0E] text-white';
       case 'light':
-        return 'bg-[#E5E7EB] text-black';
+        return 'bg-[#F8FAFC] text-slate-900 border-[var(--border-medium)]';
       case 'contrast':
-        return 'bg-[#007F3E]';
+        return 'bg-[#007F3E] text-white';
       case 'range':
-        return 'bg-gradient-to-b from-[#1C1F26] via-[#14161B] to-[#0E1014]';
+        return 'bg-gradient-to-b from-[#1C1F26] via-[#14161B] to-[#0E1014] text-white';
       case 'grid':
       default:
-        return 'bg-[var(--bg-base)]';
+        return 'bg-[var(--bg-base)] text-[var(--text-main)]';
     }
   };
 
@@ -86,12 +86,12 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
         {/* Subtle Canvas Background Pattern */}
         {bgMode === 'grid' && (
           <div
-            className="absolute inset-0 pointer-events-none opacity-25"
+            className="absolute inset-0 pointer-events-none opacity-40"
             style={{
               backgroundImage: `
-                radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px)
+                radial-gradient(circle at center, var(--canvas-grid-dot) 1.2px, transparent 1.2px),
+                linear-gradient(to right, var(--canvas-grid-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--canvas-grid-line) 1px, transparent 1px)
               `,
               backgroundSize: '32px 32px, 32px 32px, 32px 32px',
               backgroundPosition: 'center center',
@@ -110,12 +110,12 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
           </div>
         )}
 
-        {/* Center Guide Crosshair Lines (Subtle & Non-distracting) */}
+        {/* Center Guide Crosshair Lines (Subtle & Contrast-Aware) */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div className="w-full h-[1px] bg-white/[0.04]" />
-          <div className="absolute h-full w-[1px] bg-white/[0.04]" />
-          <div className="absolute w-32 h-32 rounded-full border border-white/[0.04]" />
-          <div className="absolute w-64 h-64 rounded-full border border-white/[0.03] border-dashed" />
+          <div className="w-full h-[1px]" style={{ backgroundColor: 'var(--canvas-guide)' }} />
+          <div className="absolute h-full w-[1px]" style={{ backgroundColor: 'var(--canvas-guide)' }} />
+          <div className="absolute w-32 h-32 rounded-full border" style={{ borderColor: 'var(--canvas-guide)' }} />
+          <div className="absolute w-64 h-64 rounded-full border border-dashed" style={{ borderColor: 'var(--canvas-guide)' }} />
         </div>
 
         {/* The Live Rendered Vector Crosshair */}

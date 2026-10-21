@@ -21,6 +21,10 @@ contextBridge.exposeInMainWorld('api', {
   minimize: () => ipcRenderer.send('window-minimize'),
   maximize: () => ipcRenderer.send('window-maximize'),
   close: () => ipcRenderer.send('window-close'),
+  isMaximized: () => ipcRenderer.invoke('is-window-maximized'),
+  onMaximizeChanged: (callback) => {
+    ipcRenderer.on('window-maximize-changed', (_event, isMax) => callback(isMax));
+  },
 
   // External Navigation & Browser
   openExternal: (url) => ipcRenderer.invoke('open-external', url),

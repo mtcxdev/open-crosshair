@@ -25,6 +25,8 @@ export function SettingsModal({
   onChangeTheme,
   accent,
   onChangeAccent,
+  fontSize = 'md',
+  onChangeFontSize,
   allData,
   onImportBackup,
   onShowToast,
@@ -171,6 +173,38 @@ export function SettingsModal({
                   title={acc.label}
                 >
                   {accent === acc.id && <Check size={14} className="text-white drop-shadow" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Interface Font Scaling */}
+          <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-[var(--text-secondary)]">Interface Font Size:</span>
+              <span className="text-[10px] font-mono font-medium text-[var(--accent)] uppercase">
+                {fontSize === 'sm' ? 'Compact (11.5px)' : fontSize === 'md' ? 'Default (13px)' : fontSize === 'lg' ? 'Comfortable (14.5px)' : 'Spacious (16px)'}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { id: 'sm', label: 'Small', sub: '11.5px' },
+                { id: 'md', label: 'Default', sub: '13px' },
+                { id: 'lg', label: 'Large', sub: '14.5px' },
+                { id: 'xl', label: 'Spacious', sub: '16px' },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => onChangeFontSize && onChangeFontSize(opt.id)}
+                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-0.5 transition-all ${
+                    fontSize === opt.id
+                      ? 'bg-[var(--bg-surface-elevated)] border-[var(--accent)] text-[var(--accent)] font-semibold shadow-sm'
+                      : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+                  }`}
+                >
+                  <span className="text-xs">{opt.label}</span>
+                  <span className="text-[9px] font-mono opacity-70">{opt.sub}</span>
                 </button>
               ))}
             </div>

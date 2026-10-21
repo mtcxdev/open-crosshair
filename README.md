@@ -1,7 +1,7 @@
-# 🎯 OpenCrosshair // v1.3.0
+# 🎯 OpenCrosshair // v1.4.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-v1.3.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
+  <img src="https://img.shields.io/badge/VERSION-v1.4.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
   <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
   <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Platform" />
   <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-green?style=for-the-badge" alt="Anti-Cheat" />
@@ -26,6 +26,10 @@
   * **Sniper Chevrons**: Upright or inverted V-shapes with angle offsets.
   * **Shadows & Glow**: Drop shadows and soft glow effects for high visibility against complex game textures.
   * **Dynamic Recoil & ADS**: Live firing bloom simulation with customizable recovery rates and Aim-Down-Sights (ADS) zoom.
+* **🪟 Desktop Window Controls & Accessibility**:
+  * Integrated titlebar window actions (Minimize, Maximize/Restore, Close to System Tray) with instant state feedback.
+  * High-contrast, WCAG-compliant Light theme alongside deep graphite Dark theme.
+  * Customizable interface font scaling (Compact, Default, Large, Spacious).
 * **🏆 Pro Esports Vault (100% Offline)**:
   * Includes pre-tuned pro player presets (CS2: s1mple, ZywOo; Valorant: TenZ, aspas; Apex Legends, Rust, Overwatch 2).
   * Save, organize, and duplicate unlimited custom crosshairs locally.
@@ -47,15 +51,15 @@
 > [!TIP]
 > 📂 All releases are documented with release notes, package sizes, and SHA-256 checksums in the [**Releases Directory (`releases/`)**](releases/README.md).
 
-### Latest Release: [OpenCrosshair v1.3.0](releases/v1.3.0/README.md)
+### Latest Release: [OpenCrosshair v1.4.0](releases/v1.4.0/README.md)
 
 | Platform | Format | Package | Size | Direct Download |
 | :--- | :--- | :--- | :--- | :--- |
-| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.3.0.exe` | **86.25 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair.Setup.1.3.0.exe) |
-| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.3.0.exe` | **86.02 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair.1.3.0.exe) |
-| **Linux** | **AppImage** | `OpenCrosshair-1.3.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair-1.3.0.AppImage) |
-| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.3.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/open-crosshair_1.3.0_amd64.deb) |
-| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.3.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.3.0/OpenCrosshair-1.3.0-arm64.dmg) |
+| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.4.0.exe` | **86.29 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.Setup.1.4.0.exe) |
+| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.4.0.exe` | **86.06 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.1.4.0.exe) |
+| **Linux** | **AppImage** | `OpenCrosshair-1.4.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0.AppImage) |
+| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.4.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/open-crosshair_1.4.0_amd64.deb) |
+| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.4.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0-arm64.dmg) |
 
 ---
 
