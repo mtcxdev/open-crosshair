@@ -73,6 +73,12 @@ function createMenuWindow() {
   const distPath = path.join(__dirname, '..', 'dist', 'index.html');
   if (process.env.VITE_DEV_SERVER_URL) {
     menuWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else if (isDev) {
+    menuWindow.loadURL('http://localhost:5173').catch(() => {
+      if (fs.existsSync(distPath)) {
+        menuWindow.loadFile(distPath);
+      }
+    });
   } else if (fs.existsSync(distPath)) {
     menuWindow.loadFile(distPath);
   } else {

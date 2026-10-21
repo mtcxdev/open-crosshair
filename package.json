@@ -103,6 +103,6 @@
       "category": "public.app-category.games",
       "identity": null
     },
-    "icon": "electron/assets/icon.ico"
+    "icon": "electron/assets/icon.png"
   }
 }
