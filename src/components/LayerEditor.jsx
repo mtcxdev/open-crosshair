@@ -10,7 +10,8 @@ import {
   SliderControl,
   ToggleSwitch,
   SegmentedControl,
-  ColorPickerRow
+  ColorPickerRow,
+  DirectionalArmsSelector,
 } from './PrecisionControls';
 
 export function LayerEditor({ config, onChange }) {
@@ -54,20 +55,20 @@ export function LayerEditor({ config, onChange }) {
     '#7209B7', // Royal Purple
   ];
 
-  const tabOptions = [
+  const tabs = [
     { id: 'lines', label: 'Arms', icon: Plus, enabled: lines.enabled },
     { id: 'dot', label: 'Dot', icon: Circle, enabled: dot.enabled },
     { id: 'ring', label: 'Ring', icon: Shield, enabled: ring.enabled },
     { id: 'chevron', label: 'Chevron', icon: ChevronDown, enabled: chevron.enabled },
-    { id: 'transform', label: 'Scale & Move', icon: Sliders, enabled: true },
+    { id: 'transform', label: 'Transform', icon: Sliders, enabled: true },
   ];
 
   return (
     <div className="flex flex-col h-full bg-[var(--bg-surface)] select-none w-full min-w-0 overflow-hidden">
-      {/* Top Tab Switcher */}
-      <div className="p-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] shrink-0">
-        <div className="flex items-center gap-1.5 bg-[var(--bg-base)] p-1 rounded-xl border border-[var(--border-subtle)]">
-          {tabOptions.map((tab) => {
+      {/* Top Inspector Tab Switcher */}
+      <div className="p-3 border-b border-[var(--border-subtle)] shrink-0">
+        <div className="flex items-center gap-1.5 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-subtle)]">
+          {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
@@ -75,14 +76,14 @@ export function LayerEditor({ config, onChange }) {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[var(--bg-surface-elevated)] text-[var(--accent)] font-bold shadow-sm border border-[var(--border-subtle)]'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+                    ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border-medium)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
                 }`}
               >
-                <Icon size={14} className={isActive ? 'stroke-[2.5]' : ''} />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <Icon size={13} className={isActive ? 'stroke-[2.5]' : ''} />
+                <span>{tab.label}</span>
                 {tab.enabled && tab.id !== 'transform' && (
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 shadow-[0_0_4px_var(--accent)]" />
                 )}
@@ -93,12 +94,12 @@ export function LayerEditor({ config, onChange }) {
       </div>
 
       {/* Main Inspector Scroll Area */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 text-xs">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 space-y-5 text-xs">
         {/* ===================== TAB 1: ARMS ===================== */}
         {activeTab === 'lines' && (
           <div className="space-y-4">
             {/* Master Toggle & Color */}
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
               <ToggleSwitch
                 label="Crosshair Lines"
                 description="Show main reticle cross arms"
@@ -109,7 +110,7 @@ export function LayerEditor({ config, onChange }) {
               {lines.enabled && (
                 <div className="pt-2 border-t border-[var(--border-subtle)]">
                   <ColorPickerRow
-                    label="Color"
+                    label="Arm Color"
                     color={lines.color || '#00FF66'}
                     onChange={(c) => updateLayer('lines', { color: c })}
                     presets={colorPresets}
@@ -120,10 +121,10 @@ export function LayerEditor({ config, onChange }) {
 
             {lines.enabled && (
               <>
-                {/* Geometry Card */}
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-4">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
-                    Size & Dimensions
+                {/* Dimensions Card */}
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                    Dimensions
                   </div>
 
                   <SliderControl
@@ -160,7 +161,7 @@ export function LayerEditor({ config, onChange }) {
                 </div>
 
                 {/* Outline Card */}
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
                   <ToggleSwitch
                     label="Black Outline"
                     description="High-contrast border for bright backgrounds"
@@ -169,61 +170,36 @@ export function LayerEditor({ config, onChange }) {
                   />
 
                   {lines.outline && (
-                    <SliderControl
-                      label="Outline Thickness"
-                      min={1}
-                      max={4}
-                      value={lines.outlineWidth || 1}
-                      onChange={(v) => updateLayer('lines', { outlineWidth: v })}
-                    />
+                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                      <SliderControl
+                        label="Outline Thickness"
+                        min={1}
+                        max={4}
+                        value={lines.outlineWidth || 1}
+                        onChange={(v) => updateLayer('lines', { outlineWidth: v })}
+                      />
+                    </div>
                   )}
                 </div>
 
-                {/* Direction & T-Shape Card */}
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+                {/* T-Shape & Individual Arms */}
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
                   <ToggleSwitch
                     label="T-Shape Mode"
-                    description="Removes top arm for clear headshot visibility"
+                    description="Removes top arm for unobstructed headshot visibility"
                     checked={!!lines.tShape}
                     onChange={(checked) => updateLayer('lines', { tShape: checked })}
                   />
 
                   <div className="pt-2 border-t border-[var(--border-subtle)]">
-                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-2.5">
-                      Toggle Individual Arms
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-3">
+                      Visible Arms
                     </span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { key: 'top', label: 'Top Arm', disabled: lines.tShape },
-                        { key: 'bottom', label: 'Bottom Arm' },
-                        { key: 'left', label: 'Left Arm' },
-                        { key: 'right', label: 'Right Arm' },
-                      ].map(({ key, label, disabled }) => {
-                        const isActive = lines[key] !== false && (!disabled || key !== 'top');
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            disabled={disabled}
-                            onClick={() => updateLayer('lines', { [key]: !isActive })}
-                            className={`flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                              disabled
-                                ? 'opacity-30 border-[var(--border-subtle)] cursor-not-allowed'
-                                : isActive
-                                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--text-main)] font-bold'
-                                : 'bg-[var(--bg-base)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)]'
-                            }`}
-                          >
-                            <span>{label}</span>
-                            <span
-                              className={`w-2.5 h-2.5 rounded-full ${
-                                isActive ? 'bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]' : 'bg-neutral-600'
-                              }`}
-                            />
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <DirectionalArmsSelector
+                      lines={lines}
+                      disabledTop={lines.tShape}
+                      onChange={(key, val) => updateLayer('lines', { [key]: val })}
+                    />
                   </div>
                 </div>
               </>
@@ -234,7 +210,7 @@ export function LayerEditor({ config, onChange }) {
         {/* ===================== TAB 2: CENTER DOT ===================== */}
         {activeTab === 'dot' && (
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
               <ToggleSwitch
                 label="Center Dot"
                 description="Small focal point in the middle"
@@ -244,7 +220,7 @@ export function LayerEditor({ config, onChange }) {
 
               {dot.enabled && (
                 <>
-                  <div className="pt-3 border-t border-[var(--border-subtle)] space-y-2">
+                  <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2">
                     <span className="text-xs font-semibold text-[var(--text-secondary)] block">
                       Dot Shape
                     </span>
@@ -252,7 +228,7 @@ export function LayerEditor({ config, onChange }) {
                       value={dot.shape === 'square' ? 'square' : 'circle'}
                       onChange={(shape) => updateLayer('dot', { shape })}
                       options={[
-                        { value: 'circle', label: 'Round Dot' },
+                        { value: 'circle', label: 'Circle' },
                         { value: 'square', label: 'Pixel Square' },
                       ]}
                     />
@@ -260,7 +236,7 @@ export function LayerEditor({ config, onChange }) {
 
                   <div className="pt-2 border-t border-[var(--border-subtle)]">
                     <ColorPickerRow
-                      label="Color"
+                      label="Dot Color"
                       color={dot.color || '#00FF66'}
                       onChange={(c) => updateLayer('dot', { color: c })}
                       presets={colorPresets}
@@ -272,8 +248,8 @@ export function LayerEditor({ config, onChange }) {
 
             {dot.enabled && (
               <>
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-4">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
                     Dot Size
                   </div>
 
@@ -287,22 +263,24 @@ export function LayerEditor({ config, onChange }) {
                   />
                 </div>
 
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
                   <ToggleSwitch
-                    label="Black Outline"
+                    label="Dot Outline"
                     description="Contrast ring around center dot"
                     checked={!!dot.outline}
                     onChange={(checked) => updateLayer('dot', { outline: checked })}
                   />
 
                   {dot.outline && (
-                    <SliderControl
-                      label="Outline Thickness"
-                      min={1}
-                      max={3}
-                      value={dot.outlineWidth || 1}
-                      onChange={(v) => updateLayer('dot', { outlineWidth: v })}
-                    />
+                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                      <SliderControl
+                        label="Outline Thickness"
+                        min={1}
+                        max={3}
+                        value={dot.outlineWidth || 1}
+                        onChange={(v) => updateLayer('dot', { outlineWidth: v })}
+                      />
+                    </div>
                   )}
                 </div>
               </>
@@ -313,10 +291,10 @@ export function LayerEditor({ config, onChange }) {
         {/* ===================== TAB 3: RING ===================== */}
         {activeTab === 'ring' && (
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
               <ToggleSwitch
                 label="Center Ring"
-                description="Circular reticle ring"
+                description="Perimeter ring for hipfire tracking"
                 checked={!!ring.enabled}
                 onChange={(checked) => updateLayer('ring', { enabled: checked })}
               />
@@ -324,7 +302,7 @@ export function LayerEditor({ config, onChange }) {
               {ring.enabled && (
                 <div className="pt-2 border-t border-[var(--border-subtle)]">
                   <ColorPickerRow
-                    label="Color"
+                    label="Ring Color"
                     color={ring.color || '#00FF66'}
                     onChange={(c) => updateLayer('ring', { color: c })}
                     presets={colorPresets}
@@ -335,8 +313,8 @@ export function LayerEditor({ config, onChange }) {
 
             {ring.enabled && (
               <>
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-4">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
                     Ring Dimensions
                   </div>
 
@@ -349,7 +327,7 @@ export function LayerEditor({ config, onChange }) {
                   />
 
                   <SliderControl
-                    label="Thickness"
+                    label="Ring Thickness"
                     min={1}
                     max={8}
                     value={ring.thickness || 2}
@@ -357,30 +335,32 @@ export function LayerEditor({ config, onChange }) {
                   />
                 </div>
 
-                <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
                   <ToggleSwitch
                     label="Dashed Style"
-                    description="Broken tactical dashes"
+                    description="Segmented tactical ring"
                     checked={!!ring.dashed}
                     onChange={(checked) => updateLayer('ring', { dashed: checked })}
                   />
 
                   <ToggleSwitch
-                    label="Inside Color Tint"
-                    description="Semi-transparent circle tint"
+                    label="Inner Fill Tint"
+                    description="Semi-transparent center tint"
                     checked={!!ring.fill}
                     onChange={(checked) => updateLayer('ring', { fill: checked })}
                   />
 
                   {ring.fill && (
-                    <SliderControl
-                      label="Tint Opacity"
-                      min={5}
-                      max={100}
-                      unit="%"
-                      value={Math.round((ring.fillOpacity || 0.2) * 100)}
-                      onChange={(v) => updateLayer('ring', { fillOpacity: v / 100 })}
-                    />
+                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                      <SliderControl
+                        label="Tint Opacity"
+                        min={5}
+                        max={100}
+                        unit="%"
+                        value={Math.round((ring.fillOpacity || 0.2) * 100)}
+                        onChange={(v) => updateLayer('ring', { fillOpacity: v / 100 })}
+                      />
+                    </div>
                   )}
                 </div>
               </>
@@ -391,7 +371,7 @@ export function LayerEditor({ config, onChange }) {
         {/* ===================== TAB 4: CHEVRON ===================== */}
         {activeTab === 'chevron' && (
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
               <ToggleSwitch
                 label="Optic Chevron"
                 description="Angled arrow reticle"
@@ -403,7 +383,7 @@ export function LayerEditor({ config, onChange }) {
                 <div className="pt-2 border-t border-[var(--border-subtle)]">
                   <ToggleSwitch
                     label="Invert (V-Shape)"
-                    description="Flip arrow downwards"
+                    description="Flip chevron downwards"
                     checked={!!chevron.inverted}
                     onChange={(checked) => updateLayer('chevron', { inverted: checked })}
                   />
@@ -412,9 +392,9 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {chevron.enabled && (
-              <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-4">
-                <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
-                  Chevron Size & Position
+              <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                  Chevron Dimensions
                 </div>
 
                 <SliderControl
@@ -434,7 +414,7 @@ export function LayerEditor({ config, onChange }) {
                 />
 
                 <SliderControl
-                  label="Height Shift"
+                  label="Vertical Shift"
                   min={-20}
                   max={20}
                   value={chevron.offsetY || 0}
@@ -445,17 +425,17 @@ export function LayerEditor({ config, onChange }) {
           </div>
         )}
 
-        {/* ===================== TAB 5: SCALE & MOVE ===================== */}
+        {/* ===================== TAB 5: TRANSFORM ===================== */}
         {activeTab === 'transform' && (
           <div className="space-y-4">
             {/* Scale & Angle */}
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-4">
-              <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
-                Overall Scale & Angle
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+              <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                Scale & Angle
               </div>
 
               <SliderControl
-                label="Overall Size"
+                label="Global Scale"
                 min={0.5}
                 max={3.0}
                 step={0.05}
@@ -476,13 +456,13 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {/* Recoil Bloom */}
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
               <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
                 Dynamic Recoil
               </div>
 
               <SliderControl
-                label="Bloom Expansion"
+                label="Bloom Multiplier"
                 min={0}
                 max={3.0}
                 step={0.1}
@@ -491,15 +471,15 @@ export function LayerEditor({ config, onChange }) {
                 onChange={(v) => updateRoot('recoilMultiplier', v)}
               />
               <span className="text-xs text-[var(--text-secondary)] block leading-relaxed">
-                Reticle arms expand when clicking or firing weapons.
+                Reticle arms expand outward when firing weapons.
               </span>
             </div>
 
             {/* Centering Position */}
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
-                  Screen Offset
+                  Screen Calibration
                 </span>
                 {(config.offsetX !== 0 || config.offsetY !== 0) && (
                   <button
@@ -514,14 +494,14 @@ export function LayerEditor({ config, onChange }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <SliderControl
-                  label="X (Horizontal)"
+                  label="X Shift"
                   min={-40}
                   max={40}
                   value={config.offsetX || 0}
                   onChange={(v) => updateRoot('offsetX', v)}
                 />
                 <SliderControl
-                  label="Y (Vertical)"
+                  label="Y Shift"
                   min={-40}
                   max={40}
                   value={config.offsetY || 0}
@@ -531,7 +511,7 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {/* Drop Shadow */}
-            <div className="p-4 rounded-xl bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
               <ToggleSwitch
                 label="Drop Shadow"
                 description="Dark shadow behind reticle for contrast"
@@ -540,13 +520,15 @@ export function LayerEditor({ config, onChange }) {
               />
 
               {shadow.enabled && (
-                <SliderControl
-                  label="Shadow Blur"
-                  min={1}
-                  max={10}
-                  value={shadow.blur || 2}
-                  onChange={(v) => updateRoot('shadow', { ...shadow, blur: v })}
-                />
+                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                  <SliderControl
+                    label="Shadow Blur"
+                    min={1}
+                    max={10}
+                    value={shadow.blur || 2}
+                    onChange={(v) => updateRoot('shadow', { ...shadow, blur: v })}
+                  />
+                </div>
               )}
             </div>
           </div>

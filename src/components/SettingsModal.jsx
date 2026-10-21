@@ -3,7 +3,6 @@ import {
   Settings,
   Keyboard,
   Palette,
-  Shield,
   Download,
   Upload,
   RefreshCw,
@@ -12,7 +11,8 @@ import {
   Moon,
   Laptop,
   Check,
-  Heart
+  Heart,
+  Sliders,
 } from 'lucide-react';
 import { generateCrosshairSVG } from '../utils/svgGenerator';
 
@@ -85,221 +85,178 @@ export function SettingsModal({
     { id: 'violet', label: 'Violet', color: '#8B5CF6' },
     { id: 'amber', label: 'Amber', color: '#F59E0B' },
     { id: 'rose', label: 'Rose', color: '#F43F5E' },
-    { id: 'lime', label: 'Lime', color: '#84CC16' },
     { id: 'blue', label: 'Blue', color: '#3B82F6' },
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-6 select-none text-xs">
-      <div className="w-full max-w-lg card-elevated p-6 space-y-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none text-xs">
+      <div className="w-full max-w-lg rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-medium)] p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[var(--accent-subtle)] border border-[var(--accent-border)] flex items-center justify-center text-[var(--accent)]">
-              <Settings size={17} />
+            <div className="w-9 h-9 rounded-xl bg-[var(--accent-subtle)] border border-[var(--accent-border)] flex items-center justify-center text-[var(--accent)]">
+              <Settings size={18} />
             </div>
             <div>
               <h3 className="font-bold text-base text-[var(--text-main)]">Settings</h3>
-              <p className="text-xs text-[var(--text-secondary)]">Customize theme, UI scale, and shortcuts</p>
+              <p className="text-xs text-[var(--text-secondary)]">Preferences, interface scaling, and backups</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)] transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
           >
             <X size={17} />
           </button>
         </div>
 
-        {/* ================= Theme Selection ================= */}
-        <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-4">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-main)]">
-            <Palette size={15} className="text-[var(--accent)]" />
-            <span>Look & Theme</span>
+        {/* Section 1: Appearance & Theme */}
+        <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+            <Palette size={14} className="text-[var(--accent)]" />
+            <span>Theme & Accent</span>
           </div>
 
-          {/* Theme Mode Segmented Control */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <button
-              onClick={() => onChangeTheme('dark')}
-              className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                theme === 'dark'
-                  ? 'bg-[var(--bg-surface-elevated)] border-[var(--accent)] text-[var(--accent)] font-semibold shadow-sm'
-                  : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              <Moon size={15} />
-              <span>Dark</span>
-            </button>
-
-            <button
-              onClick={() => onChangeTheme('light')}
-              className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                theme === 'light'
-                  ? 'bg-[var(--bg-surface-elevated)] border-[var(--accent)] text-[var(--accent)] font-semibold shadow-sm'
-                  : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              <Sun size={15} />
-              <span>Light</span>
-            </button>
-
-            <button
-              onClick={() => onChangeTheme('system')}
-              className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                theme === 'system'
-                  ? 'bg-[var(--bg-surface-elevated)] border-[var(--accent)] text-[var(--accent)] font-semibold shadow-sm'
-                  : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)]'
-              }`}
-            >
-              <Laptop size={15} />
-              <span>System</span>
-            </button>
+          {/* Theme Selector */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'dark', label: 'Dark', icon: Moon },
+              { id: 'light', label: 'Light', icon: Sun },
+              { id: 'system', label: 'System', icon: Laptop },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => onChangeTheme(id)}
+                className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer font-semibold ${
+                  theme === id
+                    ? 'bg-[var(--bg-app)] border-[var(--accent)] text-[var(--accent)] shadow-sm'
+                    : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
+                }`}
+              >
+                <Icon size={14} />
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
 
           {/* Accent Color Swatches */}
-          <div className="space-y-2 pt-3 border-t border-[var(--border-subtle)]">
+          <div className="pt-3 border-t border-[var(--border-subtle)] space-y-2">
             <span className="text-xs font-medium text-[var(--text-secondary)] block">Accent Color:</span>
-            <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center gap-3">
               {accentOptions.map((acc) => (
                 <button
                   key={acc.id}
                   onClick={() => onChangeAccent(acc.id)}
                   className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform cursor-pointer ${
-                    accent === acc.id ? 'scale-115 shadow-md ring-2 ring-white/60' : 'hover:scale-105'
+                    accent === acc.id ? 'scale-115 ring-2 ring-white/60 shadow-md' : 'hover:scale-105'
                   }`}
                   style={{ backgroundColor: acc.color }}
                   title={acc.label}
                 >
-                  {accent === acc.id && <Check size={14} className="text-white drop-shadow" />}
+                  {accent === acc.id && <Check size={13} className="text-white drop-shadow" />}
                 </button>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Interface & Font Scaling Slider */}
-          <div className="space-y-3 pt-3 border-t border-[var(--border-subtle)]">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[var(--text-main)]">UI & Font Size:</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-base)] px-2 py-0.5 rounded-md border border-[var(--border-subtle)]">
-                  {uiScale}%
-                </span>
-                {uiScale !== 100 && (
-                  <button
-                    type="button"
-                    onClick={() => onChangeUiScale && onChangeUiScale(100)}
-                    className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--accent)] underline cursor-pointer"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
+        {/* Section 2: UI & Font Size Scaling */}
+        <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+              <Sliders size={14} className="text-[var(--accent)]" />
+              <span>UI & Font Scale</span>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-app)] px-2.5 py-0.5 rounded-lg border border-[var(--border-subtle)]">
+                {uiScale}%
+              </span>
+              {uiScale !== 100 && (
+                <button
+                  type="button"
+                  onClick={() => onChangeUiScale && onChangeUiScale(100)}
+                  className="text-xs text-[var(--text-secondary)] hover:text-[var(--accent)] underline cursor-pointer"
+                >
+                  Reset (100%)
+                </button>
+              )}
+            </div>
+          </div>
 
-            <div className="relative flex items-center h-6">
-              <input
-                type="range"
-                min={75}
-                max={130}
-                step={1}
-                value={uiScale}
-                onChange={(e) => onChangeUiScale && onChangeUiScale(Number(e.target.value))}
-                style={{
-                  background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${((uiScale - 75) / (130 - 75)) * 100}%, var(--border-medium) ${((uiScale - 75) / (130 - 75)) * 100}%, var(--border-medium) 100%)`,
-                }}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer outline-none transition-all"
-              />
-            </div>
+          <div className="relative flex items-center h-6">
+            <input
+              type="range"
+              min={75}
+              max={130}
+              step={1}
+              value={uiScale}
+              onChange={(e) => onChangeUiScale && onChangeUiScale(Number(e.target.value))}
+              style={{
+                background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${((uiScale - 75) / (130 - 75)) * 100}%, var(--border-medium) ${((uiScale - 75) / (130 - 75)) * 100}%, var(--border-medium) 100%)`,
+              }}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer outline-none transition-all"
+            />
+          </div>
 
-            <div className="flex justify-between text-[11px] text-[var(--text-tertiary)] font-mono">
-              <span>Compact (75%)</span>
-              <span>Default (100%)</span>
-              <span>Large (130%)</span>
-            </div>
+          <div className="flex justify-between text-[11px] text-[var(--text-muted)] font-mono">
+            <span>Compact (75%)</span>
+            <span>Normal (100%)</span>
+            <span>Large (130%)</span>
           </div>
         </div>
 
-        {/* ================= Hotkeys ================= */}
-        <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-main)]">
-            <Keyboard size={15} className="text-[var(--accent)]" />
-            <span>Shortcuts & Hotkeys</span>
+        {/* Section 3: Hotkeys */}
+        <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+            <Keyboard size={14} className="text-[var(--accent)]" />
+            <span>Shortcuts</span>
           </div>
 
           <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">
-              <span className="text-[var(--text-secondary)] font-medium">Show / Hide Crosshair</span>
-              <kbd className="px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] border border-[var(--border-medium)] font-mono text-[var(--accent)] font-bold text-xs">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)]">
+              <span className="text-[var(--text-secondary)] font-medium">Toggle Screen Overlay</span>
+              <kbd className="px-2.5 py-1 rounded-md bg-[var(--bg-card)] border border-[var(--border-medium)] font-mono text-[var(--accent)] font-bold text-xs">
                 Ctrl + Shift + X
               </kbd>
             </div>
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">
-              <span className="text-[var(--text-secondary)] font-medium">Reset Position to (0, 0)</span>
-              <kbd className="px-2.5 py-1 rounded-md bg-[var(--bg-surface-elevated)] border border-[var(--border-medium)] font-mono text-[var(--accent)] font-bold text-xs">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)]">
+              <span className="text-[var(--text-secondary)] font-medium">Re-Center Crosshair (0, 0)</span>
+              <kbd className="px-2.5 py-1 rounded-md bg-[var(--bg-card)] border border-[var(--border-medium)] font-mono text-[var(--accent)] font-bold text-xs">
                 Ctrl + Shift + C
               </kbd>
             </div>
           </div>
         </div>
 
-        {/* ================= Support & Donate ================= */}
-        <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-rose-500/20 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-main)]">
-              <Heart size={15} className="text-rose-400 fill-rose-500/20" />
-              <span>Support Development</span>
-            </div>
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-medium">
-              Free & Open Source
-            </span>
-          </div>
-
-          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-            OpenCrosshair has zero subscriptions, zero ads, and zero telemetry. If you enjoy using it, consider donating to help keep new presets and builds thriving!
-          </p>
-
-          <button
-            onClick={() => {
-              onClose();
-              if (onOpenDonation) onOpenDonation();
-            }}
-            className="w-full py-2.5 px-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50 text-rose-400 font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm text-xs"
-          >
-            <Heart size={14} className="fill-rose-500/30" />
-            <span>Support Developer (Crypto / Donation)</span>
-          </button>
-        </div>
-
-        {/* ================= Backup & SVG Export ================= */}
-        <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-main)]">
-            <Download size={15} className="text-[var(--accent)]" />
-            <span>Export & Backup</span>
+        {/* Section 4: Export & Backup */}
+        <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+            <Download size={14} className="text-[var(--accent)]" />
+            <span>Backup & Export</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
             <button
               onClick={handleDownloadSVG}
-              className="btn-secondary text-xs py-2.5 cursor-pointer"
+              className="py-2.5 px-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               <Download size={14} />
-              <span>Save as SVG Vector</span>
+              <span>Export SVG</span>
             </button>
 
             <button
               onClick={handleExportBackup}
-              className="btn-secondary text-xs py-2.5 cursor-pointer"
+              className="py-2.5 px-3 rounded-xl bg-[var(--bg-app)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               <Download size={14} />
-              <span>Export Backup (.json)</span>
+              <span>Backup (.json)</span>
             </button>
           </div>
 
-          <label className="btn-ghost w-full border border-dashed border-[var(--border-medium)] py-2.5 text-xs cursor-pointer flex items-center justify-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-main)] rounded-xl">
+          <label className="w-full py-2.5 px-3 rounded-xl border border-dashed border-[var(--border-medium)] hover:border-[var(--accent)] text-[var(--text-secondary)] hover:text-[var(--text-main)] flex items-center justify-center gap-2 cursor-pointer transition-all text-xs font-medium">
             <Upload size={14} />
-            <span>Restore from Backup File</span>
+            <span>Restore Backup</span>
             <input
               type="file"
               accept=".json"
@@ -309,23 +266,23 @@ export function SettingsModal({
           </label>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)]">
+        {/* Modal Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-[var(--border-subtle)]">
           {confirmReset ? (
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-rose-400">Are you sure?</span>
+              <span className="text-xs text-rose-400 font-medium">Are you sure?</span>
               <button
                 onClick={() => {
                   onResetDefaults();
                   setConfirmReset(false);
                 }}
-                className="px-2 py-1 rounded bg-rose-600 text-white font-medium text-[11px]"
+                className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
               >
                 Yes, Reset All
               </button>
               <button
                 onClick={() => setConfirmReset(false)}
-                className="px-2 py-1 rounded bg-[var(--bg-surface-elevated)] text-[var(--text-secondary)] text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[var(--bg-card)] text-[var(--text-secondary)] text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -333,14 +290,17 @@ export function SettingsModal({
           ) : (
             <button
               onClick={() => setConfirmReset(true)}
-              className="text-rose-400 hover:underline text-[11px] flex items-center gap-1.5"
+              className="text-[var(--text-muted)] hover:text-rose-400 text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
             >
-              <RefreshCw size={12} />
+              <RefreshCw size={13} />
               <span>Reset Factory Settings</span>
             </button>
           )}
 
-          <button onClick={onClose} className="btn-primary text-xs px-4">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--accent-foreground)] font-bold text-xs cursor-pointer transition-all shadow-sm"
+          >
             Done
           </button>
         </div>

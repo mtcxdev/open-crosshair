@@ -17,10 +17,12 @@ export function SliderControl({
   const pct = Math.min(100, Math.max(0, ((numValue - min) / (max - min)) * 100));
 
   return (
-    <div className={`space-y-2.5 ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+    <div className={`space-y-2 mb-4.5 last:mb-0 ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
       <div className="flex items-center justify-between text-xs">
-        <span className="text-[var(--text-main)] font-medium select-none">{label}</span>
-        <div className="flex items-center bg-[var(--bg-base)] border border-[var(--border-medium)] rounded-lg px-2.5 py-1 focus-within:border-[var(--accent)] transition-all shadow-sm">
+        <span className="text-[var(--text-main)] font-semibold select-none tracking-wide">
+          {label}
+        </span>
+        <div className="flex items-center bg-[var(--bg-input)] border border-[var(--border-medium)] rounded-lg px-2.5 py-1 focus-within:border-[var(--accent)] transition-all shadow-sm">
           <input
             type="number"
             min={min}
@@ -28,10 +30,10 @@ export function SliderControl({
             step={step}
             value={numValue}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="w-12 text-right bg-transparent text-[var(--text-main)] font-mono text-xs font-semibold outline-none"
+            className="w-12 text-right bg-transparent text-[var(--text-main)] font-mono text-xs font-bold outline-none"
           />
           {unit && (
-            <span className="text-[11px] text-[var(--text-secondary)] ml-1 select-none font-mono">
+            <span className="text-[11px] text-[var(--text-muted)] ml-1 select-none font-mono">
               {unit}
             </span>
           )}
@@ -57,19 +59,19 @@ export function SliderControl({
 }
 
 /**
- * Gamer-friendly, comfortable Card-style Toggle Switch
+ * Modern Card-style Toggle Switch with smooth knob and clear labels
  */
 export function ToggleSwitch({ checked, onChange, label, description, disabled = false }) {
   return (
     <div
       onClick={() => !disabled && onChange(!checked)}
-      className={`flex items-center justify-between p-3.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-base)] hover:border-[var(--border-medium)] hover:bg-[var(--bg-surface-hover)] cursor-pointer select-none group transition-all ${
+      className={`flex items-center justify-between p-3.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--border-medium)] hover:bg-[var(--bg-card-hover)] cursor-pointer select-none group transition-all ${
         disabled ? 'opacity-40 pointer-events-none' : ''
       }`}
     >
       <div className="min-w-0 pr-3">
         {label && (
-          <span className="text-xs font-semibold text-[var(--text-main)] block truncate group-hover:text-[var(--accent)] transition-colors">
+          <span className="text-xs font-bold text-[var(--text-main)] block truncate group-hover:text-[var(--accent)] transition-colors">
             {label}
           </span>
         )}
@@ -81,13 +83,13 @@ export function ToggleSwitch({ checked, onChange, label, description, disabled =
       </div>
 
       <div
-        className={`w-10 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out shrink-0 ${
-          checked ? 'bg-[var(--accent)]' : 'bg-[var(--bg-surface-active)] border border-[var(--border-medium)]'
+        className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out shrink-0 ${
+          checked ? 'bg-[var(--accent)]' : 'bg-[var(--border-medium)]'
         }`}
       >
         <div
           className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out ${
-            checked ? 'translate-x-4' : 'translate-x-0'
+            checked ? 'translate-x-5' : 'translate-x-0'
           }`}
         />
       </div>
@@ -100,7 +102,7 @@ export function ToggleSwitch({ checked, onChange, label, description, disabled =
  */
 export function SegmentedControl({ options, value, onChange, size = 'sm' }) {
   return (
-    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)] w-full">
+    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] w-full">
       {options.map((opt) => {
         const isSelected = value === opt.value;
         return (
@@ -108,12 +110,12 @@ export function SegmentedControl({ options, value, onChange, size = 'sm' }) {
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-semibold transition-all cursor-pointer ${
               size === 'sm' ? 'text-xs' : 'text-sm'
             } ${
               isSelected
-                ? 'bg-[var(--bg-surface-elevated)] text-[var(--accent)] font-bold shadow-sm border border-[var(--border-subtle)]'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface-hover)]'
+                ? 'bg-[var(--bg-card)] text-[var(--accent)] font-bold shadow-sm border border-[var(--border-medium)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
             }`}
           >
             {opt.icon && <span className="shrink-0">{opt.icon}</span>}
@@ -126,14 +128,14 @@ export function SegmentedControl({ options, value, onChange, size = 'sm' }) {
 }
 
 /**
- * Spacious Color Picker Row with Big Clickable Swatches
+ * Spacious Color Picker Row with Quick Swatches
  */
 export function ColorPickerRow({ label, color, onChange, presets = [] }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-xs font-semibold text-[var(--text-main)]">
-        <span>{label || 'COLOR'}</span>
-        <span className="font-mono text-[var(--accent)] uppercase text-xs font-bold">
+        <span>{label || 'Color'}</span>
+        <span className="font-mono text-[var(--accent)] uppercase text-xs font-bold bg-[var(--bg-input)] px-2 py-0.5 rounded-md border border-[var(--border-subtle)]">
           {color}
         </span>
       </div>
@@ -152,8 +154,8 @@ export function ColorPickerRow({ label, color, onChange, presets = [] }) {
           />
         </label>
 
-        <div className="flex-1 flex items-center bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 focus-within:border-[var(--accent)] transition-all shadow-sm">
-          <span className="text-[var(--text-tertiary)] font-mono text-xs mr-1">#</span>
+        <div className="flex-1 flex items-center bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-xl px-3 py-2 focus-within:border-[var(--accent)] transition-all shadow-sm">
+          <span className="text-[var(--text-muted)] font-mono text-xs mr-1">#</span>
           <input
             type="text"
             value={(color || '').replace(/^#/, '')}
@@ -179,7 +181,7 @@ export function ColorPickerRow({ label, color, onChange, presets = [] }) {
                 className={`w-7 h-7 rounded-lg border-2 shrink-0 transition-transform cursor-pointer shadow-sm ${
                   isSelected
                     ? 'scale-115 border-white shadow-[0_0_10px_rgba(255,255,255,0.6)] ring-2 ring-[var(--accent)]'
-                    : 'border-black/20 dark:border-white/20 hover:scale-110 opacity-85 hover:opacity-100'
+                    : 'border-white/10 hover:scale-110 opacity-80 hover:opacity-100'
                 }`}
                 style={{ backgroundColor: preset }}
                 title={preset}
@@ -188,6 +190,48 @@ export function ColorPickerRow({ label, color, onChange, presets = [] }) {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Visual Directional Reticle Arms Selector (Replaces Clunky Candy Buttons)
+ */
+export function DirectionalArmsSelector({ lines, onChange, disabledTop = false }) {
+  const arms = [
+    { key: 'top', label: 'Top', disabled: disabledTop },
+    { key: 'left', label: 'Left', disabled: false },
+    { key: 'right', label: 'Right', disabled: false },
+    { key: 'bottom', label: 'Bottom', disabled: false },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-2.5">
+      {arms.map(({ key, label, disabled }) => {
+        const isActive = lines[key] !== false && (!disabled || key !== 'top');
+        return (
+          <button
+            key={key}
+            type="button"
+            disabled={disabled}
+            onClick={() => onChange(key, !isActive)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+              disabled
+                ? 'opacity-30 border-[var(--border-subtle)] bg-[var(--bg-input)] cursor-not-allowed'
+                : isActive
+                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--text-main)] font-bold shadow-sm'
+                : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
+            }`}
+          >
+            <span>{label} Arm</span>
+            <span
+              className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                isActive ? 'bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]' : 'bg-neutral-600'
+              }`}
+            />
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -7,17 +7,14 @@ import {
   Settings2,
   Sun,
   Moon,
-  Heart,
   Undo2,
   Redo2,
   Eye,
   EyeOff,
-  SlidersHorizontal,
   Minus,
   Square,
   X,
   Minimize2,
-  Sliders,
 } from 'lucide-react';
 import { CrosshairPreview } from './components/CrosshairPreview';
 import { LayerEditor } from './components/LayerEditor';
@@ -30,11 +27,11 @@ import { Toast } from './components/Toast';
 import { DEFAULT_PRESETS } from './constants/defaultPresets';
 import { generateCrosshairSVG } from './utils/svgGenerator';
 
-const NAV = [
-  { id: 'studio', label: 'Crosshair Studio', hint: 'Design & adjust', icon: Crosshair },
-  { id: 'presets', label: 'Preset Library', hint: 'Browse crosshairs', icon: LayoutGrid },
-  { id: 'games', label: 'Game Profiles', hint: 'Auto-switch per game', icon: Gamepad2 },
-  { id: 'overlay', label: 'Overlay & OBS', hint: 'Screen & streaming', icon: Monitor },
+const NAV_TABS = [
+  { id: 'studio', label: 'Studio', icon: Crosshair },
+  { id: 'presets', label: 'Presets', icon: LayoutGrid },
+  { id: 'games', label: 'Game Profiles', icon: Gamepad2 },
+  { id: 'overlay', label: 'Overlay & OBS', icon: Monitor },
 ];
 
 export function App() {
@@ -70,6 +67,7 @@ export function App() {
     }
   }, []);
 
+  // Sync theme, accent, and UI scale
   useEffect(() => {
     document.documentElement.setAttribute('data-accent', accent);
     document.documentElement.setAttribute(
@@ -97,6 +95,7 @@ export function App() {
     return () => mq.removeEventListener('change', listener);
   }, [theme]);
 
+  // Load store and listeners
   useEffect(() => {
     if (!window.api) return;
     window.api.getStore().then((data) => {
@@ -265,303 +264,209 @@ export function App() {
     }
   };
 
-  const handleMinimize = () => {
-    window.api?.minimize?.();
-  };
-
-  const handleMaximize = () => {
-    window.api?.maximize?.();
-    setIsMaximized((prev) => !prev);
-  };
-
-  const handleClose = () => {
-    window.api?.close?.();
-  };
-
-  const currentNav = NAV.find((item) => item.id === activeNav) || NAV[0];
+  const isDesktop = typeof window !== 'undefined' && !!window.api;
 
   return (
-    <div className="app-shell">
-      {/* Top Titlebar */}
-      <header className="app-topbar" style={{ WebkitAppRegion: 'drag' }}>
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            <Crosshair size={20} strokeWidth={2.4} />
+    <div className="w-screen h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-main)] overflow-hidden font-sans select-none">
+      {/* Top Application Navbar */}
+      <header
+        className="h-14 flex items-center justify-between px-5 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] shrink-0 z-30"
+        style={isDesktop ? { WebkitAppRegion: 'drag' } : {}}
+      >
+        {/* Brand Lockup */}
+        <div className="flex items-center gap-2.5 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] flex items-center justify-center shadow-md">
+            <Crosshair size={18} strokeWidth={2.4} />
           </div>
-          <div className="brand-copy">
-            <span className="brand-name">
-              open<span>crosshair</span>
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-base tracking-tight text-[var(--text-main)]">
+              Open<span className="text-[var(--accent)]">Crosshair</span>
+            </span>
+            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
+              v1.4.1
             </span>
           </div>
-          <span className="version-chip">v1.4.1</span>
         </div>
 
-        <div className="topbar-actions" style={{ WebkitAppRegion: 'no-drag' }}>
+        {/* Centered Modern Navigation Tabs */}
+        <nav
+          className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]"
+          style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}
+        >
+          {NAV_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeNav === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveNav(tab.id)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border-medium)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
+                }`}
+              >
+                <Icon size={14} className={isActive ? 'stroke-[2.5]' : ''} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right Actions & Controls */}
+        <div className="flex items-center gap-2 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
           <button
-            className="icon-button"
             onClick={handleUndo}
             disabled={!canUndo}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
             title="Undo (Ctrl + Z)"
           >
-            <Undo2 size={16} />
+            <Undo2 size={15} />
           </button>
           <button
-            className="icon-button"
             onClick={handleRedo}
             disabled={!canRedo}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
             title="Redo (Ctrl + Y)"
           >
-            <Redo2 size={16} />
+            <Redo2 size={15} />
           </button>
 
-          <span className="topbar-divider" />
+          <span className="w-px h-5 bg-[var(--border-medium)] mx-1" />
+
+          {/* Overlay Status Pill */}
+          <button
+            onClick={handleToggleOverlay}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+              overlayEnabled
+                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent)]'
+                : 'bg-[var(--bg-card)] border-[var(--border-medium)] text-[var(--text-secondary)]'
+            }`}
+            title="Toggle crosshair overlay on your game screen"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                overlayEnabled ? 'bg-[var(--accent)] shadow-[0_0_8px_var(--accent)] animate-pulse' : 'bg-neutral-500'
+              }`}
+            />
+            <span>{overlayEnabled ? 'Overlay Active' : 'Overlay Hidden'}</span>
+            {overlayEnabled ? <Eye size={13} /> : <EyeOff size={13} />}
+          </button>
 
           <button
-            className={`overlay-pill ${overlayEnabled ? 'is-live' : ''}`}
-            onClick={handleToggleOverlay}
-            title="Toggle overlay reticle on screen"
+            onClick={() => setTheme((v) => (v === 'dark' ? 'light' : 'dark'))}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+            title="Toggle Dark / Light Theme"
           >
-            <span className="status-dot" />
-            <span>{overlayEnabled ? 'Overlay Active' : 'Overlay Hidden'}</span>
-            {overlayEnabled ? <Eye size={14} /> : <EyeOff size={14} />}
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
 
-          {/* Desktop Window Action Controls */}
-          <div className="window-controls">
-            <button
-              className="win-btn win-minimize"
-              onClick={handleMinimize}
-              title="Minimize"
-            >
-              <Minus size={14} />
-            </button>
-            <button
-              className="win-btn win-maximize"
-              onClick={handleMaximize}
-              title={isMaximized ? 'Restore' : 'Maximize'}
-            >
-              {isMaximized ? <Minimize2 size={12} /> : <Square size={11} />}
-            </button>
-            <button
-              className="win-btn win-close"
-              onClick={handleClose}
-              title="Close to Tray"
-            >
-              <X size={15} />
-            </button>
-          </div>
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+            title="Settings & Scaling"
+          >
+            <Settings2 size={16} />
+          </button>
+
+          {/* Desktop-Only Window Action Controls (Hidden in browser) */}
+          {isDesktop && (
+            <div className="flex items-center gap-1 pl-2 border-l border-[var(--border-subtle)]">
+              <button
+                onClick={() => window.api?.minimize?.()}
+                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] cursor-pointer"
+                title="Minimize"
+              >
+                <Minus size={13} />
+              </button>
+              <button
+                onClick={() => {
+                  window.api?.maximize?.();
+                  setIsMaximized((v) => !v);
+                }}
+                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] cursor-pointer"
+                title={isMaximized ? 'Restore' : 'Maximize'}
+              >
+                {isMaximized ? <Minimize2 size={12} /> : <Square size={11} />}
+              </button>
+              <button
+                onClick={() => window.api?.close?.()}
+                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-rose-600 cursor-pointer"
+                title="Close to Tray"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      <div className="app-body">
-        {/* Sidebar Navigation */}
-        <aside className="app-sidebar">
-          <nav className="nav-stack">
-            {NAV.map((item) => {
-              const Icon = item.icon;
-              const active = activeNav === item.id;
-              return (
-                <button
-                  key={item.id}
-                  className={`nav-item ${active ? 'active' : ''}`}
-                  onClick={() => setActiveNav(item.id)}
-                >
-                  <span className="nav-icon">
-                    <Icon size={18} strokeWidth={active ? 2.4 : 1.8} />
-                  </span>
-                  <span className="nav-text">
-                    <b>{item.label}</b>
-                    <small>{item.hint}</small>
-                  </span>
-                  {active && <span className="nav-active-mark" />}
-                </button>
-              );
-            })}
-          </nav>
+      {/* Main Workspace Viewport */}
+      <main className="flex-1 min-h-0 p-5 overflow-hidden flex flex-col">
+        {activeNav === 'studio' && (
+          <div className="flex-1 min-h-0 grid grid-cols-[minmax(0,1.25fr)_minmax(420px,480px)] gap-5 h-full">
+            {/* Left: Crosshair Preview Canvas */}
+            <div className="min-h-0 h-full flex flex-col">
+              <CrosshairPreview
+                config={crosshairConfig}
+                onTriggerRecoil={(amount) => window.api?.triggerRecoil(amount)}
+                onRecenter={handleRecenter}
+              />
+            </div>
 
-          <div className="sidebar-spacer" />
-
-          {/* Sidebar Utilities & Quick Controls */}
-          <div className="sidebar-bottom">
-            <button
-              className="sidebar-utility"
-              onClick={() => setTheme((value) => (value === 'dark' ? 'light' : 'dark'))}
-              title="Toggle Dark / Light Theme"
-            >
-              <span className="utility-icon">
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              </span>
-              <span>Theme</span>
-              <span className="utility-value capitalize">{theme}</span>
-            </button>
-
-            <button
-              className="sidebar-utility"
-              onClick={() => setSettingsOpen(true)}
-              title="Adjust UI scale and font size"
-            >
-              <span className="utility-icon">
-                <Sliders size={16} />
-              </span>
-              <span>UI Scale</span>
-              <span className="utility-value font-mono font-bold text-[var(--accent)]">{uiScale}%</span>
-            </button>
-
-            <button
-              className="sidebar-utility"
-              onClick={() => setSettingsOpen(true)}
-              title="Application Settings"
-            >
-              <span className="utility-icon">
-                <Settings2 size={16} />
-              </span>
-              <span>Settings</span>
-              <span className="utility-shortcut">↗</span>
-            </button>
-
-            <button
-              className="sidebar-utility text-rose-400 hover:text-rose-300"
-              onClick={() => setDonationOpen(true)}
-              title="Support OpenCrosshair"
-            >
-              <span className="utility-icon text-rose-400">
-                <Heart size={16} className="fill-rose-500/20" />
-              </span>
-              <span>Donate</span>
-              <span className="utility-shortcut">♥</span>
-            </button>
-          </div>
-
-          <div className="sidebar-footer">
-            <span className="footer-avatar">OC</span>
-            <div>
-              <b>OpenCrosshair</b>
-              <small>Offline & Safe</small>
+            {/* Right: Design Controls Inspector */}
+            <div className="min-h-0 h-full flex flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden shadow-sm">
+              <LayerEditor config={crosshairConfig} onChange={handleConfigChange} />
             </div>
           </div>
-        </aside>
+        )}
 
-        {/* Main Workspace */}
-        <main className="app-main">
-          {activeNav === 'studio' ? (
-            <div className="studio-container">
-              {/* Sleek Compact Header */}
-              <div className="studio-topbar">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[var(--text-tertiary)] uppercase tracking-wider">RETICLE:</span>
-                    <span className="text-sm font-bold text-[var(--text-main)]">
-                      {crosshairConfig.name || 'Custom Crosshair'}
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent)]">
-                    {Number(crosshairConfig.scale || 1).toFixed(1)}× Scale
-                  </span>
-                </div>
+        {activeNav === 'presets' && (
+          <div className="flex-1 min-h-0 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
+            <Presets
+              currentConfig={crosshairConfig}
+              onSelectPreset={(preset) => {
+                handleConfigChange(preset);
+                setActiveNav('studio');
+                showToast({ message: `Applied "${preset.name}"`, type: 'success' });
+              }}
+              savedCrosshairs={savedCrosshairs}
+              onSaveCurrent={handleSaveCurrent}
+              onDeleteSaved={handleDeleteSaved}
+              onShowToast={showToast}
+            />
+          </div>
+        )}
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleRecenter}
-                    className="btn-secondary text-xs py-1.5 px-3"
-                    title="Center crosshair position to (0, 0)"
-                  >
-                    Center Reticle
-                  </button>
-                </div>
-              </div>
+        {activeNav === 'games' && (
+          <div className="flex-1 min-h-0 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
+            <GameProfiles
+              profiles={gameProfiles}
+              onSaveProfiles={handleSaveGameProfiles}
+              savedCrosshairs={savedCrosshairs}
+              activeProfile={activeFocusedProfile}
+              onShowToast={showToast}
+            />
+          </div>
+        )}
 
-              {/* Studio Grid: Canvas on Left, Controls on Right */}
-              <section className="studio-layout">
-                <div className="studio-preview-column">
-                  <div className="preview-frame">
-                    <CrosshairPreview
-                      config={crosshairConfig}
-                      onTriggerRecoil={(amount) => window.api?.triggerRecoil(amount)}
-                      onRecenter={handleRecenter}
-                    />
-                  </div>
-                  <div className="canvas-footer">
-                    <div className="canvas-tip">
-                      <span className="tip-key">LMB</span> Test Recoil <span className="tip-separator">/</span>{' '}
-                      <span className="tip-key">RMB</span> Test ADS
-                    </div>
-                    <div className="canvas-readout">
-                      <span>OFFSET:</span>
-                      <b>
-                        {crosshairConfig.offsetX || 0}, {crosshairConfig.offsetY || 0}
-                      </b>
-                    </div>
-                  </div>
-                </div>
+        {activeNav === 'overlay' && (
+          <div className="flex-1 min-h-0 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
+            <OverlayHub
+              overlayEnabled={overlayEnabled}
+              onToggleOverlay={handleToggleOverlay}
+              displays={displays}
+              selectedDisplayId={selectedDisplayId}
+              onSelectDisplay={handleSelectDisplay}
+              streamerInfo={streamerInfo}
+              onChangeStreamerPort={handleChangeStreamerPort}
+              onShowToast={showToast}
+            />
+          </div>
+        )}
+      </main>
 
-                <div className="studio-inspector">
-                  <div className="inspector-inner">
-                    <LayerEditor config={crosshairConfig} onChange={handleConfigChange} />
-                  </div>
-                </div>
-              </section>
-            </div>
-          ) : (
-            <div className="subpage-container">
-              <div className="subpage-header">
-                <h1 className="text-lg font-bold text-[var(--text-main)]">{currentNav.label}</h1>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  {activeNav === 'presets'
-                    ? 'Browse, apply, or import community and esports crosshairs.'
-                    : activeNav === 'games'
-                    ? 'Auto-switch crosshairs automatically when specific games launch.'
-                    : 'Configure monitor displays and OBS streaming overlay.'}
-                </p>
-              </div>
-
-              {activeNav === 'presets' && (
-                <section className="subpage-panel">
-                  <Presets
-                    currentConfig={crosshairConfig}
-                    onSelectPreset={(preset) => {
-                      handleConfigChange(preset);
-                      setActiveNav('studio');
-                      showToast({ message: `Applied "${preset.name}"`, type: 'success' });
-                    }}
-                    savedCrosshairs={savedCrosshairs}
-                    onSaveCurrent={handleSaveCurrent}
-                    onDeleteSaved={handleDeleteSaved}
-                    onShowToast={showToast}
-                  />
-                </section>
-              )}
-
-              {activeNav === 'games' && (
-                <section className="subpage-panel">
-                  <GameProfiles
-                    profiles={gameProfiles}
-                    onSaveProfiles={handleSaveGameProfiles}
-                    savedCrosshairs={savedCrosshairs}
-                    activeProfile={activeFocusedProfile}
-                    onShowToast={showToast}
-                  />
-                </section>
-              )}
-
-              {activeNav === 'overlay' && (
-                <section className="subpage-panel">
-                  <OverlayHub
-                    overlayEnabled={overlayEnabled}
-                    onToggleOverlay={handleToggleOverlay}
-                    displays={displays}
-                    selectedDisplayId={selectedDisplayId}
-                    onSelectDisplay={handleSelectDisplay}
-                    streamerInfo={streamerInfo}
-                    onChangeStreamerPort={handleChangeStreamerPort}
-                    onShowToast={showToast}
-                  />
-                </section>
-              )}
-            </div>
-          )}
-        </main>
-      </div>
-
+      {/* Settings Modal */}
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -594,12 +499,14 @@ export function App() {
         onOpenDonation={() => setDonationOpen(true)}
       />
 
+      {/* Donation Modal */}
       <DonationModal
         isOpen={donationOpen}
         onClose={() => setDonationOpen(false)}
         onShowToast={showToast}
       />
 
+      {/* Toast Notification */}
       <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
