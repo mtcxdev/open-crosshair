@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Settings,
   Keyboard,
@@ -33,8 +33,6 @@ export function SettingsModal({
   onOpenDonation,
 }) {
   const [confirmReset, setConfirmReset] = useState(false);
-
-  if (!isOpen) return null;
 
   const handleDownloadSVG = () => {
     const svgStr = generateCrosshairSVG(currentConfig, { viewBoxSize: 128 });
@@ -82,11 +80,46 @@ export function SettingsModal({
   const accentOptions = [
     { id: 'emerald', label: 'Emerald', color: '#10B981' },
     { id: 'cyan', label: 'Cyan', color: '#06B6D4' },
+    { id: 'lime', label: 'Lime', color: '#84CC16' },
     { id: 'violet', label: 'Violet', color: '#8B5CF6' },
-    { id: 'amber', label: 'Amber', color: '#F59E0B' },
+    { id: 'magenta', label: 'Magenta', color: '#D946EF' },
     { id: 'rose', label: 'Rose', color: '#F43F5E' },
+    { id: 'amber', label: 'Amber', color: '#F59E0B' },
+    { id: 'orange', label: 'Orange', color: '#F97316' },
     { id: 'blue', label: 'Blue', color: '#3B82F6' },
+    { id: 'white', label: 'Silver White', color: '#E2E8F0' },
   ];
+
+  const isCustomAccent = Boolean(accent && accent.startsWith('#'));
+  const [customHex, setCustomHex] = useState(isCustomAccent ? accent.replace(/^#/, '') : '');
+
+  useEffect(() => {
+    if (isCustomAccent) {
+      setCustomHex(accent.replace(/^#/, ''));
+    } else {
+      setCustomHex('');
+    }
+  }, [accent, isCustomAccent]);
+
+  const handleHexChange = (e) => {
+    const raw = e.target.value.replace(/[^0-9A-Fa-f]/g, '').slice(0, 6);
+    setCustomHex(raw);
+    if (raw.length === 6) {
+      onChangeAccent(`#${raw}`);
+    }
+  };
+
+  const handleHexBlur = () => {
+    if (customHex.length === 3) {
+      const expanded = customHex.split('').map((c) => c + c).join('');
+      setCustomHex(expanded);
+      onChangeAccent(`#${expanded}`);
+    } else if (customHex.length > 0 && customHex.length < 6 && isCustomAccent) {
+      setCustomHex(accent.replace(/^#/, ''));
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-6 select-none text-xs">
@@ -94,9 +127,11 @@ export function SettingsModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--accent-subtle)] border border-[var(--accent-border)] flex items-center justify-center text-[var(--accent)] shadow-sm">
-              <Settings size={20} />
-            </div>
+            <img
+              src="/icon.png"
+              alt="OpenCrosshair Logo"
+              className="w-10 h-10 rounded-2xl object-contain shadow-md drop-shadow select-none pointer-events-none"
+            />
             <div>
               <h3 className="font-extrabold text-base text-[var(--text-main)]">Settings</h3>
               <p className="text-xs text-[var(--text-secondary)] mt-0.5">Preferences, interface scaling, and backups</p>
@@ -140,23 +175,79 @@ export function SettingsModal({
             ))}
           </div>
 
-          {/* Accent Color Swatches */}
+          {/* Accent Color Swatches & Custom Picker */}
           <div className="pt-4 border-t border-[var(--border-subtle)] space-y-3">
-            <span className="text-xs font-bold text-[var(--text-secondary)] block">Accent Color:</span>
-            <div className="flex items-center gap-3">
-              {accentOptions.map((acc) => (
-                <button
-                  key={acc.id}
-                  onClick={() => onChangeAccent(acc.id)}
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform cursor-pointer shadow-sm ${
-                    accent === acc.id ? 'scale-115 ring-2 ring-white/70 shadow-md' : 'hover:scale-105'
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[var(--text-secondary)]">Accent Color:</span>
+                {isCustomAccent && (
+                  <span className="text-[11px] font-mono font-bold text-[var(--accent)] bg-[var(--bg-input)] px-2 py-0.5 rounded-md border border-[var(--border-subtle)]">
+                    {accent.toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              {/* Custom Picker Controls */}
+              <div className="flex items-center gap-2">
+                <label
+                  title="Pick custom color"
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer transition-all shadow-sm border border-[var(--border-medium)] relative overflow-hidden ${
+                    isCustomAccent
+                      ? 'ring-2 ring-white/90 shadow-md'
+                      : 'hover:scale-105 opacity-85 hover:opacity-100 bg-[var(--bg-input)]'
                   }`}
-                  style={{ backgroundColor: acc.color }}
-                  title={acc.label}
+                  style={isCustomAccent ? { backgroundColor: accent } : {}}
                 >
-                  {accent === acc.id && <Check size={15} className="text-white drop-shadow stroke-[3]" />}
-                </button>
-              ))}
+                  <input
+                    type="color"
+                    value={isCustomAccent ? accent : '#10B981'}
+                    onChange={(e) => onChangeAccent(e.target.value)}
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  />
+                  {isCustomAccent ? (
+                    <Check size={12} className="text-white drop-shadow stroke-[3] pointer-events-none" />
+                  ) : (
+                    <Palette size={13} className="text-[var(--text-secondary)] pointer-events-none" />
+                  )}
+                </label>
+
+                {/* Hex input */}
+                <div className="flex items-center bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 focus-within:border-[var(--accent)] transition-all">
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] mr-0.5">#</span>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="HEX..."
+                    value={customHex}
+                    onChange={handleHexChange}
+                    onBlur={handleHexBlur}
+                    onKeyDown={(e) => e.key === 'Enter' && handleHexBlur()}
+                    className="w-14 bg-transparent font-mono text-[11px] text-[var(--text-main)] outline-none uppercase placeholder:text-[var(--text-muted)]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Presets Grid */}
+            <div className="grid grid-cols-10 gap-2 pt-1">
+              {accentOptions.map((acc) => {
+                const isSelected = accent === acc.id;
+                return (
+                  <button
+                    key={acc.id}
+                    onClick={() => onChangeAccent(acc.id)}
+                    className={`h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-sm relative ${
+                      isSelected
+                        ? 'scale-110 ring-2 ring-white/90 shadow-md'
+                        : 'hover:scale-105 opacity-85 hover:opacity-100'
+                    }`}
+                    style={{ backgroundColor: acc.color }}
+                    title={acc.label}
+                  >
+                    {isSelected && <Check size={14} className="text-white drop-shadow stroke-[3]" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

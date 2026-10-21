@@ -69,7 +69,16 @@ export function App() {
 
   // Sync theme, accent, and UI scale
   useEffect(() => {
-    document.documentElement.setAttribute('data-accent', accent);
+    if (accent && accent.startsWith('#')) {
+      document.documentElement.setAttribute('data-accent', 'custom');
+      document.documentElement.style.setProperty('--accent', accent);
+      document.documentElement.style.setProperty('--accent-foreground', '#FFFFFF');
+    } else {
+      document.documentElement.setAttribute('data-accent', accent || 'emerald');
+      document.documentElement.style.removeProperty('--accent');
+      document.documentElement.style.removeProperty('--accent-foreground');
+    }
+
     document.documentElement.setAttribute(
       'data-theme',
       theme === 'system'
@@ -275,9 +284,11 @@ export function App() {
       >
         {/* Brand Lockup */}
         <div className="flex items-center gap-3 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
-          <div className="w-8 h-8 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] flex items-center justify-center shadow-md">
-            <Crosshair size={18} strokeWidth={2.4} />
-          </div>
+          <img
+            src="/icon.png"
+            alt="OpenCrosshair Logo"
+            className="w-8 h-8 rounded-xl object-contain shadow-md drop-shadow select-none pointer-events-none"
+          />
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base tracking-tight text-[var(--text-main)]">
               Open<span className="text-[var(--accent)]">Crosshair</span>

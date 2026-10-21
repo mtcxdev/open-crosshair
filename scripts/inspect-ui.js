@@ -64,11 +64,21 @@ async function main() {
 
     // Reload page to ensure latest vite updates are mounted
     await send('Page.reload');
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 2000));
 
-    // 1. Studio View
-    console.log('Capturing Studio view...');
-    await takeScreenshot('01_studio_fixed');
+    // Ensure dark theme and emerald accent for initial studio view
+    await evaluate(`
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.setAttribute('data-accent', 'emerald');
+      document.documentElement.style.removeProperty('--accent');
+      localStorage.setItem('och_theme', 'dark');
+      localStorage.setItem('och_accent', 'emerald');
+    `);
+    await new Promise(r => setTimeout(r, 500));
+
+    // 1. Studio View (Ultra Dark + Icon)
+    console.log('Capturing Studio view (Dark Mode + App Icon)...');
+    await takeScreenshot('01_studio_dark_icon');
 
     // 2. Presets View
     console.log('Switching to Presets...');
@@ -77,45 +87,40 @@ async function main() {
       if (btn) btn.click();
     `);
     await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('02_presets_fixed');
+    await takeScreenshot('02_presets_view');
 
-    // 3. Game Profiles View
-    console.log('Switching to Game Profiles...');
-    await evaluate(`
-      const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Game Profiles'));
-      if (btn) btn.click();
-    `);
-    await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('03_game_profiles_fixed');
-
-    // 4. Overlay & OBS View
-    console.log('Switching to Overlay & OBS...');
-    await evaluate(`
-      const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Overlay & OBS'));
-      if (btn) btn.click();
-    `);
-    await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('04_overlay_hub_fixed');
-
-    // 5. Open Settings Modal
+    // 3. Open Settings Modal (Swatches + Icon + Color Picker)
     console.log('Opening Settings modal...');
     await evaluate(`
       const settingsBtn = document.querySelector('button[title*="Settings"]');
       if (settingsBtn) settingsBtn.click();
     `);
     await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('05_settings_fixed');
+    await takeScreenshot('03_settings_dark_swatches');
 
-    // 6. Switch to Light Mode in Settings Modal
+    // 4. Test Custom Hex Accent
+    console.log('Testing Custom Hex Accent (#E11D48)...');
+    await evaluate(`
+      const input = document.querySelector('input[placeholder="HEX..."]');
+      if (input) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        nativeSetter.call(input, 'E11D48');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    `);
+    await new Promise(r => setTimeout(r, 600));
+    await takeScreenshot('04_settings_custom_hex');
+
+    // 5. Test Light Mode
     console.log('Testing Light Mode...');
     await evaluate(`
       const lightBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Light Mode'));
       if (lightBtn) lightBtn.click();
     `);
     await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('06_settings_light_fixed');
+    await takeScreenshot('05_settings_light');
 
-    // Close Settings to view Light Mode Studio
+    // 6. Close Settings & View Light Mode Studio
     await evaluate(`
       const doneBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Done'));
       if (doneBtn) doneBtn.click();
@@ -123,7 +128,24 @@ async function main() {
       if (studioBtn) studioBtn.click();
     `);
     await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('07_studio_light_fixed');
+    await takeScreenshot('06_studio_light');
+
+    // 7. Restore to Dark Mode & Emerald for default state
+    await evaluate(`
+      const settingsBtn = document.querySelector('button[title*="Settings"]');
+      if (settingsBtn) settingsBtn.click();
+    `);
+    await new Promise(r => setTimeout(r, 400));
+    await evaluate(`
+      const darkBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Dark Mode'));
+      if (darkBtn) darkBtn.click();
+      const emeraldBtn = document.querySelector('button[title="Emerald"]');
+      if (emeraldBtn) emeraldBtn.click();
+      const doneBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Done'));
+      if (doneBtn) doneBtn.click();
+    `);
+    await new Promise(r => setTimeout(r, 600));
+    await takeScreenshot('07_studio_dark_restored');
 
     ws.close();
   } catch (err) {
