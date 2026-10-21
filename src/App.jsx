@@ -80,7 +80,7 @@ export function App() {
     );
     const scaleVal = (uiScale || 100) / 100;
     document.documentElement.style.setProperty('--ui-scale', String(scaleVal));
-    document.documentElement.style.fontSize = `${14.5 * scaleVal}px`;
+    document.documentElement.style.fontSize = `${15 * scaleVal}px`;
     localStorage.setItem('och_accent', accent);
     localStorage.setItem('och_theme', theme);
     localStorage.setItem('och_ui_scale', String(uiScale));
@@ -270,19 +270,19 @@ export function App() {
     <div className="w-screen h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-main)] overflow-hidden font-sans select-none">
       {/* Top Application Navbar */}
       <header
-        className="h-14 flex items-center justify-between px-5 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] shrink-0 z-30"
+        className="h-15 flex items-center justify-between px-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] shrink-0 z-30"
         style={isDesktop ? { WebkitAppRegion: 'drag' } : {}}
       >
         {/* Brand Lockup */}
-        <div className="flex items-center gap-2.5 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] flex items-center justify-center shadow-md">
+        <div className="flex items-center gap-3 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
+          <div className="w-8 h-8 rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)] flex items-center justify-center shadow-md">
             <Crosshair size={18} strokeWidth={2.4} />
           </div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base tracking-tight text-[var(--text-main)]">
               Open<span className="text-[var(--accent)]">Crosshair</span>
             </span>
-            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
+            <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
               v1.4.1
             </span>
           </div>
@@ -290,7 +290,7 @@ export function App() {
 
         {/* Centered Modern Navigation Tabs */}
         <nav
-          className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]"
+          className="flex items-center gap-2 p-1.5 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-subtle)]"
           style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}
         >
           {NAV_TABS.map((tab) => {
@@ -300,36 +300,36 @@ export function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveNav(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border-medium)]'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
                 }`}
               >
-                <Icon size={14} className={isActive ? 'stroke-[2.5]' : ''} />
+                <Icon size={15} className={isActive ? 'stroke-[2.5]' : ''} />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </nav>
 
-        {/* Right Actions & Controls */}
+        {/* Right Actions & Window Controls */}
         <div className="flex items-center gap-2 shrink-0" style={isDesktop ? { WebkitAppRegion: 'no-drag' } : {}}>
           <button
             onClick={handleUndo}
             disabled={!canUndo}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
             title="Undo (Ctrl + Z)"
           >
-            <Undo2 size={15} />
+            <Undo2 size={16} />
           </button>
           <button
             onClick={handleRedo}
             disabled={!canRedo}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] disabled:opacity-25 disabled:cursor-not-allowed transition-all cursor-pointer"
             title="Redo (Ctrl + Y)"
           >
-            <Redo2 size={15} />
+            <Redo2 size={16} />
           </button>
 
           <span className="w-px h-5 bg-[var(--border-medium)] mx-1" />
@@ -337,9 +337,9 @@ export function App() {
           {/* Overlay Status Pill */}
           <button
             onClick={handleToggleOverlay}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
               overlayEnabled
-                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent)]'
+                ? 'bg-[var(--accent-subtle)] border-[var(--accent-border)] text-[var(--accent)] shadow-sm'
                 : 'bg-[var(--bg-card)] border-[var(--border-medium)] text-[var(--text-secondary)]'
             }`}
             title="Toggle crosshair overlay on your game screen"
@@ -350,61 +350,63 @@ export function App() {
               }`}
             />
             <span>{overlayEnabled ? 'Overlay Active' : 'Overlay Hidden'}</span>
-            {overlayEnabled ? <Eye size={13} /> : <EyeOff size={13} />}
+            {overlayEnabled ? <Eye size={14} /> : <EyeOff size={14} />}
           </button>
 
           <button
             onClick={() => setTheme((v) => (v === 'dark' ? 'light' : 'dark'))}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
             title="Toggle Dark / Light Theme"
           >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
 
           <button
             onClick={() => setSettingsOpen(true)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-all cursor-pointer"
             title="Settings & Scaling"
           >
-            <Settings2 size={16} />
+            <Settings2 size={17} />
           </button>
 
-          {/* Desktop-Only Window Action Controls (Hidden in browser) */}
-          {isDesktop && (
-            <div className="flex items-center gap-1 pl-2 border-l border-[var(--border-subtle)]">
-              <button
-                onClick={() => window.api?.minimize?.()}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] cursor-pointer"
-                title="Minimize"
-              >
-                <Minus size={13} />
-              </button>
-              <button
-                onClick={() => {
-                  window.api?.maximize?.();
+          {/* Window Control Buttons (Minimize, Maximize/Restore, Close) */}
+          <div className="flex items-center gap-1 pl-3 ml-1 border-l border-[var(--border-subtle)]">
+            <button
+              onClick={() => (window.api?.minimize ? window.api.minimize() : console.log('minimize'))}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)] transition-all cursor-pointer"
+              title="Minimize Window"
+            >
+              <Minus size={15} />
+            </button>
+            <button
+              onClick={() => {
+                if (window.api?.maximize) {
+                  window.api.maximize();
                   setIsMaximized((v) => !v);
-                }}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)] cursor-pointer"
-                title={isMaximized ? 'Restore' : 'Maximize'}
-              >
-                {isMaximized ? <Minimize2 size={12} /> : <Square size={11} />}
-              </button>
-              <button
-                onClick={() => window.api?.close?.()}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-rose-600 cursor-pointer"
-                title="Close to Tray"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          )}
+                } else {
+                  setIsMaximized((v) => !v);
+                }
+              }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)] transition-all cursor-pointer"
+              title={isMaximized ? 'Restore' : 'Maximize'}
+            >
+              {isMaximized ? <Minimize2 size={14} /> : <Square size={13} />}
+            </button>
+            <button
+              onClick={() => (window.api?.close ? window.api.close() : console.log('close'))}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-rose-600 transition-all cursor-pointer"
+              title="Close to Tray"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Main Workspace Viewport */}
-      <main className="flex-1 min-h-0 p-5 overflow-hidden flex flex-col">
+      <main className="flex-1 min-h-0 p-6 overflow-hidden flex flex-col">
         {activeNav === 'studio' && (
-          <div className="flex-1 min-h-0 grid grid-cols-[minmax(0,1.25fr)_minmax(420px,480px)] gap-5 h-full">
+          <div className="flex-1 min-h-0 grid grid-cols-[minmax(0,1.25fr)_minmax(420px,480px)] gap-6 h-full">
             {/* Left: Crosshair Preview Canvas */}
             <div className="min-h-0 h-full flex flex-col">
               <CrosshairPreview
@@ -415,14 +417,14 @@ export function App() {
             </div>
 
             {/* Right: Design Controls Inspector */}
-            <div className="min-h-0 h-full flex flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden shadow-sm">
+            <div className="min-h-0 h-full flex flex-col rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden shadow-sm">
               <LayerEditor config={crosshairConfig} onChange={handleConfigChange} />
             </div>
           </div>
         )}
 
         {activeNav === 'presets' && (
-          <div className="flex-1 min-h-0 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
+          <div className="flex-1 min-h-0 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden shadow-sm">
             <Presets
               currentConfig={crosshairConfig}
               onSelectPreset={(preset) => {
@@ -439,7 +441,7 @@ export function App() {
         )}
 
         {activeNav === 'games' && (
-          <div className="flex-1 min-h-0 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
+          <div className="flex-1 min-h-0 rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden p-6 shadow-sm">
             <GameProfiles
               profiles={gameProfiles}
               onSaveProfiles={handleSaveGameProfiles}

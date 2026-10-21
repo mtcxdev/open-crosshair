@@ -66,8 +66,8 @@ export function LayerEditor({ config, onChange }) {
   return (
     <div className="flex flex-col h-full bg-[var(--bg-surface)] select-none w-full min-w-0 overflow-hidden">
       {/* Top Inspector Tab Switcher */}
-      <div className="p-3 border-b border-[var(--border-subtle)] shrink-0">
-        <div className="flex items-center gap-1.5 bg-[var(--bg-input)] p-1 rounded-xl border border-[var(--border-subtle)]">
+      <div className="p-4 border-b border-[var(--border-subtle)] shrink-0">
+        <div className="flex items-center gap-2 bg-[var(--bg-input)] p-1.5 rounded-2xl border border-[var(--border-subtle)]">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -76,16 +76,16 @@ export function LayerEditor({ config, onChange }) {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border-medium)]'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
                 }`}
               >
-                <Icon size={13} className={isActive ? 'stroke-[2.5]' : ''} />
+                <Icon size={14} className={isActive ? 'stroke-[2.5]' : ''} />
                 <span>{tab.label}</span>
                 {tab.enabled && tab.id !== 'transform' && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 shadow-[0_0_4px_var(--accent)]" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--accent)] shrink-0 shadow-[0_0_6px_var(--accent)]" />
                 )}
               </button>
             );
@@ -94,12 +94,12 @@ export function LayerEditor({ config, onChange }) {
       </div>
 
       {/* Main Inspector Scroll Area */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 space-y-5 text-xs">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 text-xs">
         {/* ===================== TAB 1: ARMS ===================== */}
         {activeTab === 'lines' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Master Toggle & Color */}
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
               <ToggleSwitch
                 label="Crosshair Lines"
                 description="Show main reticle cross arms"
@@ -108,7 +108,7 @@ export function LayerEditor({ config, onChange }) {
               />
 
               {lines.enabled && (
-                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                <div className="pt-4 border-t border-[var(--border-subtle)]">
                   <ColorPickerRow
                     label="Arm Color"
                     color={lines.color || '#00FF66'}
@@ -122,8 +122,8 @@ export function LayerEditor({ config, onChange }) {
             {lines.enabled && (
               <>
                 {/* Dimensions Card */}
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-5 pb-3 border-b border-[var(--border-subtle)]">
                     Dimensions
                   </div>
 
@@ -161,7 +161,7 @@ export function LayerEditor({ config, onChange }) {
                 </div>
 
                 {/* Outline Card */}
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
                   <ToggleSwitch
                     label="Black Outline"
                     description="High-contrast border for bright backgrounds"
@@ -170,7 +170,7 @@ export function LayerEditor({ config, onChange }) {
                   />
 
                   {lines.outline && (
-                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                    <div className="pt-4 border-t border-[var(--border-subtle)]">
                       <SliderControl
                         label="Outline Thickness"
                         min={1}
@@ -183,7 +183,7 @@ export function LayerEditor({ config, onChange }) {
                 </div>
 
                 {/* T-Shape & Individual Arms */}
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
                   <ToggleSwitch
                     label="T-Shape Mode"
                     description="Removes top arm for unobstructed headshot visibility"
@@ -191,8 +191,8 @@ export function LayerEditor({ config, onChange }) {
                     onChange={(checked) => updateLayer('lines', { tShape: checked })}
                   />
 
-                  <div className="pt-2 border-t border-[var(--border-subtle)]">
-                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-3">
+                  <div className="pt-4 border-t border-[var(--border-subtle)]">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-4">
                       Visible Arms
                     </span>
                     <DirectionalArmsSelector
@@ -209,8 +209,8 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 2: CENTER DOT ===================== */}
         {activeTab === 'dot' && (
-          <div className="space-y-4">
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
               <ToggleSwitch
                 label="Center Dot"
                 description="Small focal point in the middle"
@@ -220,7 +220,7 @@ export function LayerEditor({ config, onChange }) {
 
               {dot.enabled && (
                 <>
-                  <div className="pt-2 border-t border-[var(--border-subtle)] space-y-2">
+                  <div className="pt-4 border-t border-[var(--border-subtle)] space-y-3">
                     <span className="text-xs font-semibold text-[var(--text-secondary)] block">
                       Dot Shape
                     </span>
@@ -234,7 +234,7 @@ export function LayerEditor({ config, onChange }) {
                     />
                   </div>
 
-                  <div className="pt-2 border-t border-[var(--border-subtle)]">
+                  <div className="pt-4 border-t border-[var(--border-subtle)]">
                     <ColorPickerRow
                       label="Dot Color"
                       color={dot.color || '#00FF66'}
@@ -248,8 +248,8 @@ export function LayerEditor({ config, onChange }) {
 
             {dot.enabled && (
               <>
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-5 pb-3 border-b border-[var(--border-subtle)]">
                     Dot Size
                   </div>
 
@@ -263,7 +263,7 @@ export function LayerEditor({ config, onChange }) {
                   />
                 </div>
 
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
                   <ToggleSwitch
                     label="Dot Outline"
                     description="Contrast ring around center dot"
@@ -272,7 +272,7 @@ export function LayerEditor({ config, onChange }) {
                   />
 
                   {dot.outline && (
-                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                    <div className="pt-4 border-t border-[var(--border-subtle)]">
                       <SliderControl
                         label="Outline Thickness"
                         min={1}
@@ -290,8 +290,8 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 3: RING ===================== */}
         {activeTab === 'ring' && (
-          <div className="space-y-4">
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
               <ToggleSwitch
                 label="Center Ring"
                 description="Perimeter ring for hipfire tracking"
@@ -300,7 +300,7 @@ export function LayerEditor({ config, onChange }) {
               />
 
               {ring.enabled && (
-                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                <div className="pt-4 border-t border-[var(--border-subtle)]">
                   <ColorPickerRow
                     label="Ring Color"
                     color={ring.color || '#00FF66'}
@@ -313,8 +313,8 @@ export function LayerEditor({ config, onChange }) {
 
             {ring.enabled && (
               <>
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm">
+                  <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-5 pb-3 border-b border-[var(--border-subtle)]">
                     Ring Dimensions
                   </div>
 
@@ -335,7 +335,7 @@ export function LayerEditor({ config, onChange }) {
                   />
                 </div>
 
-                <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+                <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
                   <ToggleSwitch
                     label="Dashed Style"
                     description="Segmented tactical ring"
@@ -351,7 +351,7 @@ export function LayerEditor({ config, onChange }) {
                   />
 
                   {ring.fill && (
-                    <div className="pt-2 border-t border-[var(--border-subtle)]">
+                    <div className="pt-4 border-t border-[var(--border-subtle)]">
                       <SliderControl
                         label="Tint Opacity"
                         min={5}
@@ -370,8 +370,8 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 4: CHEVRON ===================== */}
         {activeTab === 'chevron' && (
-          <div className="space-y-4">
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5 shadow-sm">
               <ToggleSwitch
                 label="Optic Chevron"
                 description="Angled arrow reticle"
@@ -380,7 +380,7 @@ export function LayerEditor({ config, onChange }) {
               />
 
               {chevron.enabled && (
-                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                <div className="pt-4 border-t border-[var(--border-subtle)]">
                   <ToggleSwitch
                     label="Invert (V-Shape)"
                     description="Flip chevron downwards"
@@ -392,8 +392,8 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {chevron.enabled && (
-              <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+              <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm">
+                <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-5 pb-3 border-b border-[var(--border-subtle)]">
                   Chevron Dimensions
                 </div>
 
@@ -427,10 +427,10 @@ export function LayerEditor({ config, onChange }) {
 
         {/* ===================== TAB 5: TRANSFORM ===================== */}
         {activeTab === 'transform' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Scale & Angle */}
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-              <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-4 pb-2 border-b border-[var(--border-subtle)]">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm">
+              <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider mb-5 pb-3 border-b border-[var(--border-subtle)]">
                 Scale & Angle
               </div>
 
@@ -456,7 +456,7 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {/* Recoil Bloom */}
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4 shadow-sm">
               <div className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
                 Dynamic Recoil
               </div>
@@ -476,7 +476,7 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {/* Centering Position */}
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
                   Screen Calibration
@@ -492,7 +492,7 @@ export function LayerEditor({ config, onChange }) {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <SliderControl
                   label="X Shift"
                   min={-40}
@@ -511,7 +511,7 @@ export function LayerEditor({ config, onChange }) {
             </div>
 
             {/* Drop Shadow */}
-            <div className="p-4.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3.5">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4 shadow-sm">
               <ToggleSwitch
                 label="Drop Shadow"
                 description="Dark shadow behind reticle for contrast"
@@ -520,7 +520,7 @@ export function LayerEditor({ config, onChange }) {
               />
 
               {shadow.enabled && (
-                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                <div className="pt-4 border-t border-[var(--border-subtle)]">
                   <SliderControl
                     label="Shadow Blur"
                     min={1}

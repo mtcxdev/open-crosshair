@@ -5,3 +5,5 @@ release
 *-debug.log*
 .DS_Store
 Thumbs.db
+audit_screenshots
+*.png

@@ -68,25 +68,25 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[var(--bg-surface)] p-4 select-none overflow-hidden relative rounded-2xl border border-[var(--border-subtle)] shadow-sm">
+    <div className="flex-1 flex flex-col h-full bg-[var(--bg-surface)] p-6 select-none overflow-hidden relative rounded-3xl border border-[var(--border-subtle)] shadow-sm">
       {/* Top Floating Stats Bar */}
-      <div className="flex items-center justify-between pb-3 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider">
+      <div className="flex items-center justify-between pb-4 gap-4 shrink-0">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-extrabold text-[var(--text-main)] uppercase tracking-wider">
             {config.name || 'Custom Reticle'}
           </span>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--accent)] font-semibold">
+          <span className="text-xs font-mono px-2.5 py-0.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--accent)] font-bold">
             {Number(config.scale || 1).toFixed(1)}×
           </span>
           {isAds && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
               ADS
             </span>
           )}
         </div>
 
         {/* Backdrop Presets Segmented Bar */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
           {[
             { id: 'grid', label: 'Grid' },
             { id: 'range', label: 'Range' },
@@ -98,7 +98,7 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
               key={mode.id}
               type="button"
               onClick={() => setBgMode(mode.id)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 bgMode === mode.id
                   ? 'bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
@@ -112,7 +112,7 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
 
       {/* Main Interactive Canvas Area */}
       <div
-        className={`relative flex-1 rounded-xl border border-[var(--border-medium)] overflow-hidden flex items-center justify-center cursor-crosshair transition-colors duration-200 shadow-inner ${getBgClass()}`}
+        className={`relative flex-1 rounded-2xl border border-[var(--border-medium)] overflow-hidden flex items-center justify-center cursor-crosshair transition-colors duration-200 shadow-inner ${getBgClass()}`}
         onMouseDown={handleMouseDown}
         onContextMenu={(e) => e.preventDefault()}
       >
@@ -158,24 +158,24 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
 
         {/* Firing Indicator */}
         {isFiring && (
-          <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-center gap-1.5 animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+          <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold flex items-center gap-2 animate-pulse shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-rose-500" />
             <span>Recoil Active</span>
           </div>
         )}
 
         {/* Subtle Canvas Hint */}
-        <div className="absolute bottom-2.5 left-3 text-[11px] text-[var(--text-muted)] pointer-events-none">
+        <div className="absolute bottom-3 left-4 text-xs text-[var(--text-muted)] font-medium pointer-events-none">
           Left click: Test recoil &bull; Right click: Test ADS
         </div>
       </div>
 
       {/* Bottom Canvas Control Toolbar */}
-      <div className="mt-3 flex items-center justify-between pt-2 border-t border-[var(--border-subtle)] text-xs shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)]">
-            <span className="text-[var(--text-muted)] font-sans">Offset:</span>
-            <span className="font-bold text-[var(--text-main)]">
+      <div className="mt-4 flex items-center justify-between pt-3 border-t border-[var(--border-subtle)] text-xs shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)]">
+            <span className="text-[var(--text-muted)] font-sans font-medium">Offset:</span>
+            <span className="font-bold text-[var(--text-main)] px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)]">
               {config.offsetX || 0}, {config.offsetY || 0}
             </span>
           </div>
@@ -184,15 +184,15 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
             <button
               type="button"
               onClick={onRecenter}
-              className="text-xs text-[var(--accent)] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-[var(--accent)] hover:underline font-bold flex items-center gap-1.5 cursor-pointer"
             >
-              <RotateCcw size={12} />
+              <RotateCcw size={13} />
               <span>Center (0, 0)</span>
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           {/* Zoom Level Selector */}
           <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs font-mono">
             {[1, 2, 4, 8].map((lvl) => (
@@ -200,9 +200,9 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
                 key={lvl}
                 type="button"
                 onClick={() => setZoomLevel(lvl)}
-                className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                   zoomLevel === lvl
-                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border border-[var(--accent-border)]'
+                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border border-[var(--accent-border)] shadow-sm'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-main)]'
                 }`}
               >
@@ -215,9 +215,9 @@ export function CrosshairPreview({ config, onTriggerRecoil, onRecenter }) {
           <button
             type="button"
             onClick={triggerRecoilPulse}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-medium)] hover:bg-[var(--bg-card-hover)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-semibold cursor-pointer transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-medium)] hover:bg-[var(--bg-card-hover)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-bold cursor-pointer transition-all shadow-sm"
           >
-            <Play size={12} className="fill-current text-[var(--accent)]" />
+            <Play size={13} className="fill-current text-[var(--accent)]" />
             <span>Test Shot</span>
           </button>
         </div>
