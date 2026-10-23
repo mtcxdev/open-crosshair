@@ -1,172 +1,140 @@
-# 🎯 OpenCrosshair // v1.4.0
+# OpenCrosshair
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-v1.4.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version" />
-  <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="License" />
-  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Platform" />
-  <img src="https://img.shields.io/badge/ANTI--CHEAT-100%25%20SAFE-green?style=for-the-badge" alt="Anti-Cheat" />
-  <img src="https://img.shields.io/badge/OFFLINE-ZERO%20TELEMETRY-rose?style=for-the-badge" alt="Offline" />
+  <img src="public/icon.png" alt="OpenCrosshair logo" width="128" />
 </p>
 
-> **OpenCrosshair** is a 100% free, open-source, local-first precision crosshair overlay and vector studio with a refined, customizable modern UI. Recreating the multi-window architecture of professional overlay tools with zero subscriptions, zero ads, zero telemetry, and zero internet dependencies.
+<p align="center">
+  <img src="https://img.shields.io/badge/VERSION-v1.4.0-emerald?style=for-the-badge&logo=github&logoColor=white" alt="Version 1.4.0" />
+  <img src="https://img.shields.io/badge/LICENSE-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=black" alt="MIT License" />
+  <img src="https://img.shields.io/badge/PLATFORM-WINDOWS%20%7C%20LINUX%20%7C%20MACOS-blue?style=for-the-badge&logo=electron&logoColor=white" alt="Windows, Linux, and macOS" />
+  <img src="https://img.shields.io/badge/OFFLINE-ZERO%20TELEMETRY-rose?style=for-the-badge" alt="Offline with no telemetry" />
+</p>
 
----
+OpenCrosshair is a free, open-source, local-first desktop crosshair overlay and vector customization studio. It provides detailed crosshair controls, local presets, game profiles, and a local streaming endpoint for OBS Studio and Streamlabs. The application is designed to work without accounts, subscriptions, ads, or telemetry.
 
-## ⚡ Key Highlights
+## Features
 
-* **🖥️ Always-On-Top Desktop Overlay**:
-  * Real-time transparent click-through HUD window (`screen-saver` priority level).
-  * Automatic Windows High-DPI compensation (100%, 125%, 150%, 200%) preserving crisp 1:1 pixel rendering.
-  * Sub-pixel coordinate snapping to prevent antialiasing blur around screen center.
-  * Multi-monitor support: select any target display.
-* **🎨 Precision Vector Crosshair Studio**:
-  * **Independent Arms**: Top/Bottom/Left/Right controls, T-Shape toggle, corner rounding, outline thickness, gap, and colors.
-  * **Center Dot**: Square or circular dot, customizable radius, color, and outline.
-  * **Tactical Ring**: Customizable radius, line thickness, dashed segment patterns, and center fill with opacity.
-  * **Sniper Chevrons**: Upright or inverted V-shapes with angle offsets.
-  * **Shadows & Glow**: Drop shadows and soft glow effects for high visibility against complex game textures.
-  * **Dynamic Recoil & ADS**: Live firing bloom simulation with customizable recovery rates and Aim-Down-Sights (ADS) zoom.
-* **🪟 Desktop Window Controls & Accessibility**:
-  * Integrated titlebar window actions (Minimize, Maximize/Restore, Close to System Tray) with instant state feedback.
-  * High-contrast, WCAG-compliant Light theme alongside deep graphite Dark theme.
-  * Customizable interface font scaling (Compact, Default, Large, Spacious).
-* **🏆 Pro Esports Vault (100% Offline)**:
-  * Includes pre-tuned pro player presets (CS2: s1mple, ZywOo; Valorant: TenZ, aspas; Apex Legends, Rust, Overwatch 2).
-  * Save, organize, and duplicate unlimited custom crosshairs locally.
-  * **Sharecodes (`OC-XXXXX`)**: One-click copy/paste shareable codes without any web accounts or servers.
-* **🎮 Game Profile Auto-Detection**:
-  * Maps game executables (e.g. `cs2.exe`, `VALORANT-Win64-Shipping.exe`, `r5apex.exe`, `RustClient.exe`) to your favorite crosshairs.
-  * Automatically switches crosshair when games launch or gain foreground focus.
-* **📡 OBS & Streamlabs Streamer Hub (Dynamic Multi-Port)**:
-  * Built-in local HTTP & WebSocket streaming server with automatic conflict scanning (falls back from 3175 to free ports).
-  * Custom port configurator directly inside the Overlay Hub.
-  * Add as a transparent **Browser Source** in OBS Studio to capture your crosshair cleanly without capturing desktop overlays.
-* **🔒 100% Anti-Cheat Safe**:
-  * Zero memory injection into game processes — completely safe for VAC, Vanguard, EAC, and BattlEye.
+### Desktop overlay
 
----
+- Transparent, click-through, always-on-top overlay window.
+- Multi-monitor display selection.
+- Windows high-DPI compensation and pixel-aligned positioning.
+- Desktop window controls, including minimize, maximize, and close-to-tray behavior.
 
-## 📥 Downloads & Installation
+### Crosshair studio
 
-> [!TIP]
-> 📂 All releases are documented with release notes, package sizes, and SHA-256 checksums in the [**Releases Directory (`releases/`)**](releases/README.md).
+- Independently adjustable top, bottom, left, and right arms.
+- T-shape mode, arm gap, thickness, outline, color, and corner rounding.
+- Square or circular center dot with configurable radius and outline.
+- Tactical rings, segmented patterns, and chevrons.
+- Shadow and glow controls.
+- Recoil bloom simulation and aim-down-sights zoom settings.
 
-### Latest Release: [OpenCrosshair v1.4.0](releases/v1.4.0/README.md)
+### Presets and game profiles
 
-| Platform | Format | Package | Size | Direct Download |
-| :--- | :--- | :--- | :--- | :--- |
-| **Windows (x64)** | **Installer (`.exe`)** | `OpenCrosshair Setup 1.4.0.exe` | **86.29 MB** | [Download Installer](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.Setup.1.4.0.exe) |
-| **Windows (x64)** | **Portable (`.exe`)** | `OpenCrosshair 1.4.0.exe` | **86.06 MB** | [Download Portable](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.1.4.0.exe) |
-| **Linux** | **AppImage** | `OpenCrosshair-1.4.0.AppImage` | ~85 MB | [Download AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0.AppImage) |
-| **Linux** | **Debian (`.deb`)** | `open-crosshair_1.4.0_amd64.deb` | ~68 MB | [Download .deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/open-crosshair_1.4.0_amd64.deb) |
-| **macOS** | **DMG (`.dmg`)** | `OpenCrosshair-1.4.0-arm64.dmg` | ~88 MB | [Download .dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0-arm64.dmg) |
+- Save, organize, and duplicate crosshair presets locally.
+- Share crosshair settings with `OC-XXXXX` share codes.
+- Associate supported game executables with preferred crosshairs and switch profiles when the game becomes active.
+- Includes example presets for games such as Counter-Strike 2, Valorant, Apex Legends, Rust, and Overwatch 2.
 
----
+### Streaming integration
 
-## ⌨️ Global Shortcuts
+- Local HTTP and WebSocket server for streaming overlays.
+- Configurable server port with fallback scanning when the default port is occupied.
+- Browser-source integration for OBS Studio and Streamlabs.
+
+### Interface and privacy
+
+- Light and dark themes.
+- Multiple interface font-size settings.
+- Local-first operation with no account requirement or telemetry, as described by the project.
+
+OpenCrosshair is designed to render an external overlay without injecting code into game processes or modifying game memory. Anti-cheat policies vary by game and may change, so compatibility cannot be guaranteed for every title or anti-cheat system.
+
+## Downloads
+
+The current release described by this README is **v1.4.0**. Check the release notes and package details before installing.
+
+| Platform | Package | Download |
+| --- | --- | --- |
+| Windows x64 | Installer | [OpenCrosshair Setup 1.4.0.exe](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.Setup.1.4.0.exe) |
+| Windows x64 | Portable executable | [OpenCrosshair 1.4.0.exe](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair.1.4.0.exe) |
+| Linux | AppImage | [OpenCrosshair-1.4.0.AppImage](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0.AppImage) |
+| Linux | Debian package | [open-crosshair_1.4.0_amd64.deb](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/open-crosshair_1.4.0_amd64.deb) |
+| macOS | DMG | [OpenCrosshair-1.4.0-arm64.dmg](https://github.com/mtcxdev/open-crosshair/releases/download/v1.4.0/OpenCrosshair-1.4.0-arm64.dmg) |
+
+- [Release notes and checksums](releases/v1.4.0/README.md)
+- [All release documentation](releases/README.md)
+- [GitHub releases](https://github.com/mtcxdev/open-crosshair/releases)
+
+## Global shortcuts
 
 | Shortcut | Action |
-| :--- | :--- |
-| `Ctrl + Shift + X` | Toggle overlay visibility (Show / Hide) |
-| `Ctrl + Shift + C` | Re-center overlay to primary display center |
+| --- | --- |
+| `Ctrl + Shift + X` | Show or hide the overlay |
+| `Ctrl + Shift + C` | Re-center the overlay on the primary display |
 
----
+## Add OpenCrosshair to OBS Studio or Streamlabs
 
-## 🏗️ Architecture
-
-OpenCrosshair mirrors the proven dual-window, low-latency architecture reverse-engineered from professional overlay tools:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        OpenCrosshair (Electron)                        │
-│                                                                        │
-│  ┌───────────────────────┐             ┌────────────────────────────┐  │
-│  │   MenuWindow (React)  │  Typed IPC  │   OverlayWindow (Electron) │  │
-│  │   • Brutalist Studio  │ ──────────> │   • Transparent Window     │  │
-│  │   • Preset Vault      │             │   • Always-on-Top Clickthru│  │
-│  │   • Game Profile Map  │             │   • Recoil Bloom Pulse     │  │
-│  └───────────────────────┘             └────────────────────────────┘  │
-│              │                                        ▲                │
-│              ▼                                        │                │
-│  ┌─────────────────────────────────────────────────┐  │                │
-│  │                  Core Services                  │  │                │
-│  │  • Local Store (app.getPath('userData'))        │──┘                │
-│  │  • GameDetector (Foreground Process Poller)     │                   │
-│  │  • StreamerServer (Local HTTP/WS on :3175)      │                   │
-│  └─────────────────────────────────────────────────┘                   │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📹 Setting Up in OBS Studio / Streamlabs
-
-1. In OBS Studio, under **Sources**, click **+** and choose **Browser**.
+1. Open OBS Studio or Streamlabs and add a **Browser Source**.
 2. Name the source `Crosshair Overlay`.
-3. Set **URL** to: `http://localhost:3175`
-4. Set **Width** and **Height** to match your canvas resolution (e.g. `1920` x `1080` or `2560` x `1440`).
-5. Click **OK**. Your crosshair will render in real time on your stream with a transparent background.
+3. Set the URL to `http://localhost:3175` (or the port configured in the application).
+4. Set the width and height to match the stream canvas, such as `1920 x 1080`.
+5. Save the source. The overlay should render against a transparent background.
 
----
+If the configured port changes, use the active port shown by the application.
 
-## 🛠️ Building From Source
+## Build from source
 
 ### Prerequisites
-* [Node.js](https://nodejs.org) (v18 or higher)
-* [npm](https://www.npmjs.com/) (v9 or higher)
 
-### Setup & Run
+- Node.js 18 or later
+- npm 9 or later
+
+### Install and run
+
 ```bash
-# Clone the repository
 git clone https://github.com/mtcxdev/open-crosshair.git
 cd open-crosshair
-
-# Install dependencies
 npm install
-
-# Run in production mode
-npm start
-
-# Run in development mode (with live HMR)
 npm run dev
 ```
 
-### Build Distribution Packages
+Start the packaged application with:
+
 ```bash
-# Build Windows .exe (portable & setup installer)
+npm start
+```
+
+### Build distributables
+
+```bash
+# Build installer and portable Windows packages
 npm run dist
 
-# Build standalone portable .exe only
+# Build the portable Windows package
 npm run dist:portable
 
-# Multi-platform build
+# Run the project's multi-platform packaging command
 npm run dist:all
 ```
 
----
+Availability of platform-specific builds depends on the build environment and the project's packaging configuration.
 
-## 💖 Support & Donate
+## Support the project
 
-OpenCrosshair is 100% free, open-source software built and maintained for the gaming community. It will forever remain free with zero locked features, zero ads, zero accounts, and zero telemetry.
+OpenCrosshair is intended to remain free to use. If you find it useful, you can support continued development:
 
-If OpenCrosshair improves your gameplay or helps you build the perfect crosshair, consider supporting ongoing development:
+- [GitHub Sponsors](https://github.com/sponsors/mtcxdev)
+- [Buy Me a Coffee](https://buymeacoffee.com/mtcxdev)
 
-<p align="left">
-  <a href="https://github.com/sponsors/mtcxdev" target="_blank">
-    <img src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors" />
-  </a>
-  <a href="https://buymeacoffee.com/mtcxdev" target="_blank">
-    <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me A Coffee" />
-  </a>
-</p>
+The application also lists optional cryptocurrency donation addresses. Verify addresses inside the application before sending funds.
 
-### 🪙 Direct Crypto Donations (1-Click Copy in Desktop App)
-* **Bitcoin (BTC)**: `bc1q9h60032l84p3n8y793r33q604v0n70vxq3h888`
-* **Ethereum / USDT (ERC-20)**: `0x71C94bCde17D9a572c6F255a6d36e2f1704D1B99`
-* **Solana (SOL)**: `7NxU5p5aZ9L7w2GvB98VwM84V8xV546Zk48N9x2kG5v1`
+## Contributing
 
----
+Issues, bug reports, and focused pull requests are welcome. When reporting a problem, include the application version, operating system, steps to reproduce, and relevant logs without sharing private information.
 
-## 📄 License
+## License
 
-Distributed under the **MIT License**. Free and open-source for all players.
+OpenCrosshair is distributed under the [MIT License](LICENSE).
